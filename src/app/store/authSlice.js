@@ -4,7 +4,8 @@ import {login, logout} from '../services/authService';
 
 const initialState = {
   isAuthenticated: false,
-  status: 'idle'
+  loginStatus: 'idle',
+  logoutStatus: 'idle'
 };
 
 export const loginAsync = createAsyncThunk(
@@ -39,18 +40,24 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.pending, (state) => {
-        state.status = 'loading';
+        state.loginStatus = 'loading';
       })
       .addCase(loginAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.loginStatus = 'idle';
         state.isAuthenticated = true;
       })
+      .addCase(loginAsync.rejected, (state, action) => {
+        state.loginStatus = 'idle';
+      })
       .addCase(logoutAsync.pending, (state) => {
-        state.status = 'loading';
+        state.logoutStatus = 'loading';
       })
       .addCase(logoutAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.logoutStatus = 'idle';
         state.isAuthenticated = false;
+      })
+      .addCase(logoutAsync.rejected, (state, action) => {
+        state.logoutStatus = 'idle';
       });
   },
 });
@@ -66,6 +73,7 @@ export const authCheck = () => dispatch => {
 };
 
 export const authenticated = state => state.auth.isAuthenticated;
-export const status = state => state.auth.status;
+export const reqLoginStatus = state => state.auth.loginStatus;
+export const reqLogoutStatus = state => state.auth.logoutStatus;
 
 export default authSlice.reducer;

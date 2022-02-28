@@ -2,12 +2,11 @@ import React from 'react';
 import {useSelector} from 'react-redux';
 import {Sidebar} from 'adminlte-2-react';
 import user from '../../../assets/images/user2-160x160.jpg';
-import {profile} from '../../store/profileSlice';
-
+import {profileData} from '../../store/profileSlice';
 
 function SidebarMenu() {
-  const { Item, UserPanel } = Sidebar;
-  const me = useSelector(profile);
+  const {Item, UserPanel} = Sidebar;
+  const profile = useSelector(profileData);
 
   const managementRoutes = [
     {
@@ -53,7 +52,7 @@ function SidebarMenu() {
 
   return (
     <React.Fragment>
-      <UserPanel imageUrl={user} username={me.full_name} status="Online" statusType="success"/>
+      <UserPanel imageUrl={user} username={profile.full_name} status="Online" statusType="success"/>
       <Item icon="fa-tachometer-alt" text="Dashboard" to="/" />
       <Item text="Management" icon="fa-list">
         {managementRoutes.map((route) => <Item key={route.path} text={route.name} to={route.path} />)}

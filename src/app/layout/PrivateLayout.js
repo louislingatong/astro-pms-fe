@@ -2,14 +2,14 @@ import React from 'react';
 import AdminLTE, {Footer, Navbar, Sidebar} from 'adminlte-2-react';
 import NavbarMenu from './components/NavbarMenu';
 import SidebarMenu from './components/SidebarMenu';
-import Dashboard from "../views/Dashboard";
-import UserList from "../views/management/UserList";
-import MachineryList from "../views/management/MachineryList";
-import IntervalList from "../views/management/IntervalList";
-import VesselList from "../views/management/VesselList";
-import VesselMachineryList from "../views/management/VesselMachineryList";
-import RunningHourList from "../views/pms/RunningHourList";
-import WorkList from "../views/pms/WorkList";
+import Dashboard from '../views/Dashboard';
+import UserList from '../views/management/UserList';
+import MachineryList from '../views/management/machinery/MachineryList';
+import IntervalList from '../views/management/interval/IntervalList';
+import VesselList from '../views/management/VesselList';
+import VesselMachineryList from '../views/management/vessel-machinery/VesselMachineryList';
+import RunningHourList from '../views/pms/RunningHourList';
+import WorkList from '../views/pms/WorkList';
 
 function PrivateLayout() {
   return (

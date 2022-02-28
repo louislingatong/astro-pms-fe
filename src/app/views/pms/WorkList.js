@@ -1,20 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {metaData, reqStatus, workList, workListAsync} from '../../store/workSlice';
-import {selectedVessel} from '../../store/navbarMenuSlice';
+import {metaData, reqListStatus, workList, workListAsync} from '../../store/workSlice';
+import {activeVesselSubMenu} from '../../store/navbarMenuSlice';
 import {Box, Col, Content, Row} from 'adminlte-2-react';
-import CustomDataTable from '../../components/CustomDataTable';
+import DataTable from '../../components/DataTable';
+import {usePrevious} from '../../utils/Hooks';
 
 function WorkList({name}) {
   const dispatch = useDispatch();
-  const activeVessel = useSelector(selectedVessel);
+
+  const activeVessel = useSelector(activeVesselSubMenu);
   const meta = useSelector(metaData);
   const list = useSelector(workList);
-  const status = useSelector(reqStatus);
+  const status = useSelector(reqListStatus);
+
   const [params, setParams] = useState();
 
+  const prevList = usePrevious(list);
+
   useEffect(() => {
-    if (activeVessel.id && !list) {
+    if (activeVessel.id && !(list.length == prevList)) {
       setParams({vessel_id: activeVessel.id});
     }
   }, [activeVessel, list]);
@@ -25,20 +30,18 @@ function WorkList({name}) {
     }
   }, [params]);
 
-  const handleRowSelect = (row) => {
-    console.log(row);
-  }
-
   const handlePageChange = (page) => {
-    setParams((prevState) => ({...prevState, page}))
+    setParams((prevState) => ({...prevState, page}));
   };
 
   const handlePageLengthChange = (limit) => {
-    setParams((prevState) => ({...prevState, limit}))
+    setParams((prevState) => ({...prevState, page: 1, limit}));
   };
 
   const handleSearchChange = (keyword) => {
-    setParams((prevState) => ({...prevState, keyword}))
+    keyword
+      ? setParams({vessel_id: activeVessel.id, keyword})
+      : setParams({vessel_id: activeVessel.id});
   };
 
   const initList = () => {
@@ -100,21 +103,19 @@ function WorkList({name}) {
         <Row>
           <Col xs={12}>
             <Box>
-              <CustomDataTable
-                data={list?.length ? list : null}
+              <DataTable
+                api
+                data={list}
                 columns={header}
-                option={{
+                options={{
                   page: true,
                   pageInfo: true,
                   pageLength: true,
                   search: true,
                 }}
-                hover
                 striped
                 border
                 meta={meta}
-                params={params}
-                onSelect={handleRowSelect}
                 onPageChange={handlePageChange}
                 onSearchChange={handleSearchChange}
                 onPageLengthChange={handlePageLengthChange}

@@ -2,13 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import Transformer from '../utils/Transformer';
+import Transform from '../utils/Transformer';
 
-CustomEntry.propTypes = {
-  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
-};
-
-function CustomEntry(props) {
+function Entry(props) {
   const {
     icon,
     label,
@@ -24,7 +20,7 @@ function CustomEntry(props) {
   const hasIcon = !!(icon);
   const hasLabel = !!(label);
 
-  const localIcon = hasIcon ? Transformer.icon(icon) : null;
+  const localIcon = hasIcon ? Transform.toIcon(icon) : null;
 
   const listClasses = classnames('navbar-menu', {'dropdown': children}, className);
 
@@ -59,4 +55,8 @@ function CustomEntry(props) {
   );
 }
 
-export default CustomEntry
+Entry.propTypes = {
+  size: PropTypes.oneOf(['sm', 'md', 'lg', 'xl']),
+};
+
+export default Entry;

@@ -1,18 +1,18 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {fetchProfile} from '../services/profileService';
 import User from '../core/models/User';
-import Transformer from '../utils/Transformer';
+import Transform from '../utils/Transformer';
 
 const initialState = {
   data: new User(),
-  status: 'idle'
+  dataStatus: 'idle'
 };
 
 export const profileAsync = createAsyncThunk(
   'profile/fetchProfile',
   async () => {
     const response = await fetchProfile();
-    const data = Transformer.fetchObject(response.data, User)
+    const data = Transform.fetchObject(response.data, User)
     return {data};
   }
 );
@@ -24,16 +24,19 @@ export const profileSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(profileAsync.pending, (state) => {
-        state.status = 'loading';
+        state.dataStatus = 'loading';
       })
       .addCase(profileAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.dataStatus = 'idle';
         state.data = action.payload.data;
       })
+      .addCase(profileAsync.rejected, (state, action) => {
+        state.dataStatus = 'idle';
+      });
   },
 });
 
-export const profile = state => state.profile.data;
-export const status = state => state.profile.status;
+export const profileData = state => state.profile.data;
+export const reqDataStatus = state => state.profile.dataStatus;
 
 export default profileSlice.reducer;

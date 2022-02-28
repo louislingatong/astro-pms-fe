@@ -1,6 +1,6 @@
 import Http from '../utils/Http';
 
-export function fetchAllVessels(params) {
+export function fetchAll(params) {
   return new Promise((resolve, reject) => {
     Http.get('vessels', {params})
       .then(res => {
@@ -12,7 +12,7 @@ export function fetchAllVessels(params) {
   })
 }
 
-export function fetchVessel(id) {
+export function fetchById(id) {
   return new Promise((resolve, reject) => {
     Http.get(`vessels/${id}`)
       .then(res => {

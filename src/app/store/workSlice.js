@@ -2,20 +2,20 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import VesselMachinerySubCategoryWork from '../core/models/VesselMachinerySubCategoryWork';
 import Meta from '../core/models/Meta';
 import {fetchAllWorks} from '../services/workService';
-import Transformer from '../utils/Transformer';
+import Transform from '../utils/Transformer';
 
 const initialState = {
-  list: null,
+  list: [],
   meta: new Meta(),
-  status: 'idle'
+  listStatus: 'idle'
 };
 
 export const workListAsync = createAsyncThunk(
   'work/fetchAllWorks',
   async (params) => {
     const response = await fetchAllWorks(params);
-    const data = Transformer.fetchCollection(response.data, VesselMachinerySubCategoryWork);
-    const meta = Transformer.fetchObject(response.meta, Meta);
+    const data = Transform.fetchCollection(response.data, VesselMachinerySubCategoryWork);
+    const meta = Transform.fetchObject(response.meta, Meta);
     return {data, meta};
   }
 );
@@ -27,18 +27,21 @@ export const workSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(workListAsync.pending, (state) => {
-        state.status = 'loading';
+        state.listStatus = 'loading';
       })
       .addCase(workListAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.listStatus = 'idle';
         state.list = action.payload.data;
         state.meta = action.payload.meta;
+      })
+      .addCase(workListAsync.rejected, (state, action) => {
+        state.listStatus = 'idle';
       })
   },
 });
 
 export const workList = state => state.work.list;
 export const metaData = state => state.work.meta;
-export const reqStatus = state => state.work.status;
+export const reqListStatus = state => state.work.listStatus;
 
 export default workSlice.reducer;

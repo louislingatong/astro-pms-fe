@@ -5,11 +5,11 @@ import navbarMenuReducer from './navbarMenuSlice';
 import userReducer from './userSlice';
 import vesselReducer from './vesselSlice';
 import machineryReducer from './machinerySlice';
-import machinerySubCategoryReducer from './machinerySubCategorySlice';
 import intervalReducer from './intervalSlice';
 import vesselMachineryReducer from './vesselMachinerySlice';
 import runningHourReducer from './runningHourSlice';
 import workReducer from './workSlice';
+import optionReducer from './optionSlice';
 
 export default configureStore({
   reducer: {
@@ -19,11 +19,11 @@ export default configureStore({
     user: userReducer,
     vessel: vesselReducer,
     machinery: machineryReducer,
-    machinerySubCategory: machinerySubCategoryReducer,
     interval: intervalReducer,
     vesselMachinery: vesselMachineryReducer,
     runningHour: runningHourReducer,
-    work: workReducer
+    work: workReducer,
+    option: optionReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -37,11 +37,11 @@ export default configureStore({
           'user',
           'vessel',
           'machinery',
-          'machinerySubCategory',
           'vesselMachinery',
           'interval',
           'runningHour',
-          'work'
+          'work',
+          'option'
         ],
       },
     }),

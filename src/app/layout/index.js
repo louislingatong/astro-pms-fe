@@ -3,22 +3,22 @@ import {useDispatch, useSelector} from 'react-redux';
 import PrivateLayout from './PrivateLayout';
 import PublicLayout from './PublicLayout';
 import {authenticated} from '../store/authSlice';
-import {profileAsync, profile} from '../store/profileSlice';
+import {profileAsync, profileData} from '../store/profileSlice';
 
 function Layout({children}) {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(authenticated);
-  const me = useSelector(profile);
+  const profile = useSelector(profileData);
 
   useEffect(() => {
-    if (isAuthenticated && !me.id) {
+    if (isAuthenticated && !profile.id) {
       intProfile();
     }
-  }, [isAuthenticated, me]);
+  }, [isAuthenticated, profile]);
 
   const intProfile = () => {
-    dispatch(profileAsync())
-  }
+    dispatch(profileAsync());
+  };
 
   return (
     <React.Fragment>

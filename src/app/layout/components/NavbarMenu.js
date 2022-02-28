@@ -1,41 +1,65 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
-import {Navbar, Inputs, Button} from 'adminlte-2-react';
+import {Inputs} from 'adminlte-2-react';
 import {logoutAsync} from '../../store/authSlice';
-import CustomEntry from '../../components/CustomEntry';
+import {Entry} from '../../components';
 import {
-  reqStatus,
-  vesselList,
-  selectedVessel,
+  vesselSubMenus,
+  activeVesselSubMenu,
+  reqVesselSubMenusStatus,
   vesselListAsync,
   setSelectedVessel
 } from '../../store/navbarMenuSlice';
+import {useDebounce} from '../../utils/Hooks';
+import Vessel from '../../core/models/Vessel';
 
 function NavbarMenu() {
-  const {Entry} = Navbar;
   const {Text} = Inputs;
 
-  const vessels = useSelector(vesselList);
-  const activeVessel = useSelector(selectedVessel);
-  const status = useSelector(reqStatus);
-
   const dispatch = useDispatch();
-  const [vesselName, setVesselName] = useState();
+
+  const vessels = useSelector(vesselSubMenus);
+  const activeVessel = useSelector(activeVesselSubMenu);
+  const vesselsStatus = useSelector(reqVesselSubMenusStatus);
+
+  const [localVessels, setLocalVessels] = useState([]);
+  const [localActiveVessel, setLocalActiveVessel] = useState(new Vessel());
+  const [vesselSearchString, setVesselSearchString] = useState();
+
+  const debouncedVesselSearchString = useDebounce(vesselSearchString, 1000);
 
   useEffect(() => {
-    if (!vessels) {
+    if (localVessels && !localVessels.length) {
       initVessels();
     }
-  }, [vessels]);
+  }, [localVessels]);
+
+  useEffect(() => {
+    if (localVessels && localVessels.length !== vessels.length) {
+      setLocalVessels(vessels);
+    }
+  }, [localVessels, vessels]);
+
+  useEffect(() => {
+    if (localActiveVessel && localActiveVessel.id !== activeVessel.id) {
+      setLocalActiveVessel(activeVessel);
+    }
+  }, [localActiveVessel, activeVessel]);
+
+  useEffect(() => {
+    if (debouncedVesselSearchString !== undefined) {
+      handleSearchVessel();
+    }
+  }, [debouncedVesselSearchString]);
 
   const handleSearchVesselChange = (e) => {
-    setVesselName(e.target.value);
+    setVesselSearchString(e.target.value);
   };
 
-  const handleSearchVessel = (e) => {
-    e.stopPropagation();
-    initVessels({keyword: vesselName});
+  const handleSearchVessel = () => {
+    const params = !!vesselSearchString ? {keyword: vesselSearchString} : {};
+    initVessels(params);
   }
 
   const initVessels = (params = {}) => {
@@ -44,7 +68,7 @@ function NavbarMenu() {
 
   return (
     <React.Fragment>
-      <CustomEntry
+      <Entry
         className="tasks-menu"
         icon="fa-ship"
         label={activeVessel.name}
@@ -54,7 +78,6 @@ function NavbarMenu() {
             id="searchVesselInput"
             labelPosition="none"
             placeholder="Search vessel"
-            buttonRight={<Button flat icon="fa-search" onClick={handleSearchVessel} />}
             onChange={handleSearchVesselChange}
           />
         }
@@ -67,7 +90,7 @@ function NavbarMenu() {
             </li>
           ))
         }
-      </CustomEntry>
+      </Entry>
       <Entry
         icon="fa-power-off"
         onClick={() => logoutAsync()}

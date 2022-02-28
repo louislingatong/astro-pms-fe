@@ -29,19 +29,19 @@ const routes = [
     name: 'Machinery',
     path: '/machinery',
     auth: true,
-    component: lazy(() => import('../views/management/MachineryList')),
+    component: lazy(() => import('../views/management/machinery/MachineryList')),
   },
   {
     name: 'Vessel Machinery',
     path: '/vessel-machinery',
     auth: true,
-    component: lazy(() => import('../views/management/VesselMachineryList')),
+    component: lazy(() => import('../views/management/vessel-machinery/VesselMachineryList')),
   },
   {
     name: 'Intervals',
     path: '/intervals',
     auth: true,
-    component: lazy(() => import('../views/management/IntervalList')),
+    component: lazy(() => import('../views/management/interval/IntervalList')),
   },
   {
     name: 'Running Hours',

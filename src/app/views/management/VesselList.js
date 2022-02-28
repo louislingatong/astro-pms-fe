@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {metaData, reqStatus, vesselList, vesselListAsync} from '../../store/vesselSlice';
+import {metaData, reqListStatus, vesselList, vesselListAsync} from '../../store/vesselSlice';
 import {Box, Col, Content, Row} from 'adminlte-2-react';
-import CustomDataTable from '../../components/CustomDataTable';
+import DataTable from '../../components/DataTable';
 
 function VesselList({name}) {
   const dispatch = useDispatch();
+
   const meta = useSelector(metaData);
   const list = useSelector(vesselList);
-  const status = useSelector(reqStatus);
+  const status = useSelector(reqListStatus);
+
   const [params, setParams] = useState();
 
   useEffect(() => {
@@ -28,15 +30,15 @@ function VesselList({name}) {
   }
 
   const handlePageChange = (page) => {
-    setParams((prevState) => ({...prevState, page}))
+    setParams((prevState) => ({...prevState, page}));
   };
 
   const handlePageLengthChange = (limit) => {
-    setParams((prevState) => ({...prevState, limit}))
+    setParams((prevState) => ({...prevState, page: 1, limit}));
   };
 
   const handleSearchChange = (keyword) => {
-    setParams((prevState) => ({...prevState, keyword}))
+    keyword ? setParams({keyword}) : setParams({});
   };
 
   const initList = () => {
@@ -61,10 +63,11 @@ function VesselList({name}) {
         <Row>
           <Col xs={12}>
             <Box>
-              <CustomDataTable
-                data={list?.length ? list : null}
+              <DataTable
+                api
+                data={list}
                 columns={header}
-                option={{
+                options={{
                   page: true,
                   pageInfo: true,
                   pageLength: true,
@@ -74,7 +77,6 @@ function VesselList({name}) {
                 striped
                 border
                 meta={meta}
-                params={params}
                 onSelect={handleRowSelect}
                 onPageChange={handlePageChange}
                 onSearchChange={handleSearchChange}

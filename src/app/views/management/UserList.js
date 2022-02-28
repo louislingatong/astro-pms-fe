@@ -1,14 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Box, Col, Content, Row} from 'adminlte-2-react';
-import {metaData, reqStatus, userList, userListAsync} from '../../store/userSlice';
-import CustomDataTable from '../../components/CustomDataTable';
+import {metaData, reqListStatus, userList, userListAsync} from '../../store/userSlice';
+import DataTable from '../../components/DataTable';
 
 function UserList({name}) {
   const dispatch = useDispatch();
+
   const meta = useSelector(metaData);
   const list = useSelector(userList);
-  const status = useSelector(reqStatus);
+  const status = useSelector(reqListStatus);
+
   const [params, setParams] = useState();
 
   useEffect(() => {
@@ -28,15 +30,15 @@ function UserList({name}) {
   }
 
   const handlePageChange = (page) => {
-    setParams((prevState) => ({...prevState, page}))
+    setParams((prevState) => ({...prevState, page}));
   };
 
   const handlePageLengthChange = (limit) => {
-    setParams((prevState) => ({...prevState, limit}))
+    setParams((prevState) => ({...prevState, page: 1, limit}));
   };
 
   const handleSearchChange = (keyword) => {
-    setParams((prevState) => ({...prevState, keyword}))
+    keyword ? setParams({keyword}) : setParams({});
   };
 
   const initList = () => {
@@ -61,10 +63,11 @@ function UserList({name}) {
         <Row>
           <Col xs={12}>
             <Box>
-              <CustomDataTable
-                data={list?.length ? list : null}
+              <DataTable
+                api
+                data={list}
                 columns={header}
-                option={{
+                options={{
                   page: true,
                   pageInfo: true,
                   pageLength: true,
@@ -74,7 +77,6 @@ function UserList({name}) {
                 striped
                 border
                 meta={meta}
-                params={params}
                 onSelect={handleRowSelect}
                 onPageChange={handlePageChange}
                 onSearchChange={handleSearchChange}

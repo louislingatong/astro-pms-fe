@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {BarLoader, ClipLoader, BeatLoader} from 'react-spinners';
-import { css } from '@emotion/react'
-
-Loader.propTypes = {
-  type: PropTypes.oneOf(['bar', 'clip', 'beat']),
-  color: PropTypes.oneOf(['light', 'dark']),
-};
+import {BarLoader, ClipLoader, BeatLoader, PulseLoader, HashLoader} from 'react-spinners';
+import {css} from '@emotion/react'
 
 const override = css`
   display: block;
@@ -20,16 +15,21 @@ const colors = {
 };
 
 function Loader(props) {
-  const color = colors[props.color] || colors.dark
-  switch (props.type) {
+  const {color = 'dark', type = 'beat'} = props;
+  switch (type) {
     case 'beat':
-      return <div><BeatLoader color={color} loading={true} size={10}/></div>
+      return <div><BeatLoader color={colors[color]} loading={true} size={10}/></div>
     case 'clip':
-      return <div className="loader-wrapper-overlay"><ClipLoader color={color} loading={true} size={50}/></div>
+      return <div className="loader-wrapper-overlay"><HashLoader color={colors[color]} loading={true} size={30}/></div>
     case 'bar':
     default:
-      return <div className="loader-wrapper"><BarLoader color={colors.light} loading={true} css={override}/></div>
+      return <div className="loader-wrapper"><BarLoader color={colors[color]} loading={true} css={override}/></div>
   }
 }
+
+Loader.propTypes = {
+  type: PropTypes.oneOf(['bar', 'clip', 'beat']),
+  color: PropTypes.oneOf(['light', 'dark']),
+};
 
 export default Loader;
