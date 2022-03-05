@@ -25,28 +25,28 @@ function MachineryList({name}) {
   const meta = useSelector(metaData);
   const status = useSelector(reqListStatus);
 
+  const isLoading = status === 'loading';
+
+  const [localMachinery, setLocalMachinery] = useState(new Machinery());
   const [localMachineries, setLocalMachineries] = useState(machineries);
-  const [localMachinery, setLocalMachinery] = useState(machinery);
-  const [params, setParams] = useState({});
   const [machineryModalShow, setMachineryModalShow] = useState(false);
-  const [selectedMachineryIds, setSelectedMachineryIds] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [params, setParams] = useState({});
+  const [filters, setFilters] = useState({});
 
   const prevLocalMachinery = usePrevious(localMachinery);
   const prevParams = usePrevious(params);
-
-  const isLoading = status === 'loading';
+  const prevFilters = usePrevious(filters);
 
   useEffect(() => {
-    if (localMachineries && !localMachineries.length) {
-      initList();
-    }
-  }, [localMachineries]);
+    initList();
+  }, []);
 
   useEffect(() => {
     if (localMachineries) {
       setLocalMachineries(machineries);
     }
-  }, [localMachineries, machineries]);
+  }, [machineries]);
 
   useEffect(() => {
     if (prevLocalMachinery) {
@@ -57,28 +57,38 @@ function MachineryList({name}) {
 
   useEffect(() => {
     if (prevLocalMachinery
-      && prevLocalMachinery.id !== localMachinery.id
+      && (prevLocalMachinery.id !== localMachinery.id)
       && !!localMachinery.id) {
       handleModalOpen();
     }
   }, [localMachinery]);
 
   useEffect(() => {
-    if (prevParams) {
+    if (prevParams && prevFilters) {
       initList();
     }
-  }, [params]);
+  }, [params, filters]);
 
   const initList = () => {
-    dispatch(machineryListAsync(params));
+    dispatch(machineryListAsync({...params, ...filters}));
   };
 
-  const handleRowSelect = (row) => {
-    if (Array.isArray(row)) {
-      setSelectedMachineryIds(row);
+  const handleRowSelect = (selectedRow) => {
+    let newSelectedRowIds = selectedRowIds.slice();
+    if (selectedRow.action === 'checked') {
+      newSelectedRowIds.push(selectedRow.id);
+    } else if (selectedRow.action === 'unchecked') {
+      const i = newSelectedRowIds.indexOf(selectedRow);
+      newSelectedRowIds.splice(i, 1)
+    } else if (selectedRow.action === 'checked_all') {
+      newSelectedRowIds = selectedRow.ids;
+    } else if (selectedRow.action === 'unchecked_all') {
+      newSelectedRowIds = [];
     } else {
-      setLocalMachinery(row)
+      newSelectedRowIds = [selectedRow.id];
+      setLocalMachinery(selectedRow);
     }
+    setSelectedRowIds(newSelectedRowIds);
   };
 
   const handlePageChange = (page) => {
@@ -98,9 +108,15 @@ function MachineryList({name}) {
     }
   };
 
-  const handleSelectDepartmentChange = (e) => {
-    const department = e.target.value;
-    !!department ? setParams({department}) : setParams({});
+  const handleFilterChange = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    setFilters(prevState => {
+      const newState = {...prevState};
+      !!value ? newState[name] = value : delete newState[name];
+      return newState;
+    });
   };
 
   const handleModalOpen = () => {
@@ -108,6 +124,7 @@ function MachineryList({name}) {
   };
 
   const handleModalClose = () => {
+    setSelectedRowIds([]);
     setLocalMachinery(new Machinery());
     setMachineryModalShow(false);
   };
@@ -148,11 +165,11 @@ function MachineryList({name}) {
               <Row>
                 <Col xs={12} sm={4} md={3} lg={2}>
                   <VesselDepartmentSelect
-                    name="vesselDepartment"
-                    id="vesselDepartment"
+                    name="department"
+                    id="departmentFilterSelect"
                     placeholder="Department"
                     allowClear={true}
-                    onChange={handleSelectDepartmentChange}
+                    onChange={handleFilterChange}
                   />
                 </Col>
                 <Col xs={12}>
@@ -163,6 +180,7 @@ function MachineryList({name}) {
                     api
                     data={localMachineries}
                     columns={header}
+                    selectedRowIds={selectedRowIds}
                     options={{
                       page: true,
                       pageInfo: true,
@@ -186,8 +204,8 @@ function MachineryList({name}) {
                 <Divider/>
                 <Col xs={12}>
                   {
-                    !!selectedMachineryIds.length
-                    && <Button type="danger" text={`Delete (${selectedMachineryIds.length})`} pullRight/>
+                    !!selectedRowIds.length
+                      && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
                   }
                 </Col>
               </Row>

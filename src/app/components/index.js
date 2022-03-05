@@ -4,6 +4,7 @@ import Entry from './Entry';
 import Loader from './Loader';
 import Modal from './Modal';
 import Pagination from './Pagination';
+import Item from './Item';
 
 export {
   DataTable,
@@ -11,5 +12,6 @@ export {
   Entry,
   Loader,
   Modal,
-  Pagination
+  Pagination,
+  Item
 }

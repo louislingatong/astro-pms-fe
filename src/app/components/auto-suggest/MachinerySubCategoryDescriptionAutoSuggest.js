@@ -13,7 +13,7 @@ function MachinerySubCategoryDescriptionAutoSuggest(props) {
   const dispatch = useDispatch();
   const suggestions = useSelector(machinerySubCategoryDescriptions);
 
-  const [localValue, setLocalValue] = useState('');
+  const [localValue, setLocalValue] = useState();
   const [localSuggestions, setLocalSuggestions] = useState([]);
 
   const debouncedLocalValue = useDebounce(localValue, 1000);
@@ -30,7 +30,7 @@ function MachinerySubCategoryDescriptionAutoSuggest(props) {
     }
   }, [debouncedLocalValue]);
 
-  const handleInputChange = (event, { newValue }) => {
+  const handleInputChange = (e, { newValue }) => {
     onChange({target: {name, value: newValue}});
   };
 

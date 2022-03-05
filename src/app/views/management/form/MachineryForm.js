@@ -95,6 +95,7 @@ function MachineryForm({data: localMachinery}) {
               id="departmentSelect"
               label="Department"
               labelPosition="above"
+              allowClear={true}
               onChange={handleInputChange}
               value={formData.department}
               disabled={isViewing}

@@ -11,11 +11,22 @@ import {reqDataStatus} from '../../../store/machinerySlice';
 function MachineryDetail({data: localMachinery}) {
   const status = useSelector(reqDataStatus);
 
-  const [selectedSubCategoryIds, setSelectedSubCategoryIds] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [showSubCategoryForm, setShowSubCategoryForm] = useState(false);
 
-  const handleRowSelect = (rows) => {
-    setSelectedSubCategoryIds(rows)
+  const handleRowSelect = (selectedRow) => {
+    let newSelectedRowIds = selectedRowIds.slice();
+    if (selectedRow.action === 'checked') {
+      newSelectedRowIds.push(selectedRow.id);
+    } else if (selectedRow.action === 'unchecked') {
+      const i = newSelectedRowIds.indexOf(selectedRow);
+      newSelectedRowIds.splice(i, 1)
+    } else if (selectedRow.action === 'checked_all') {
+      newSelectedRowIds = selectedRow.ids;
+    } else if (selectedRow.action === 'unchecked_all') {
+      newSelectedRowIds = [];
+    }
+    setSelectedRowIds(newSelectedRowIds);
   };
 
   const hasId = !!localMachinery.id;
@@ -61,6 +72,7 @@ function MachineryDetail({data: localMachinery}) {
                 <DataTable
                   data={localMachinery.sub_categories}
                   columns={header}
+                  selectedRowIds={selectedRowIds}
                   options={{
                     page: true,
                     pageInfo: true,
@@ -81,8 +93,8 @@ function MachineryDetail({data: localMachinery}) {
             <Row>
               <Col xs={12}>
                 {
-                  !!selectedSubCategoryIds.length
-                  && <Button type="danger" text={`Delete (${selectedSubCategoryIds.length})`} pullRight/>
+                  !!selectedRowIds.length
+                  && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
                 }
               </Col>
             </Row>

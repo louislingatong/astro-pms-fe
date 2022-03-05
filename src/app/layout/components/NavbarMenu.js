@@ -30,16 +30,13 @@ function NavbarMenu() {
   const debouncedVesselSearchString = useDebounce(vesselSearchString, 1000);
 
   useEffect(() => {
-    if (localVessels && !localVessels.length) {
+    if (!vessels.length) {
       initVessels();
     }
-  }, [localVessels]);
-
-  useEffect(() => {
-    if (localVessels && localVessels.length !== vessels.length) {
+    if (vessels.length  && localVessels && !localVessels.length) {
       setLocalVessels(vessels);
     }
-  }, [localVessels, vessels]);
+  }, [vessels, localVessels]);
 
   useEffect(() => {
     if (localActiveVessel && localActiveVessel.id !== activeVessel.id) {
@@ -86,7 +83,7 @@ function NavbarMenu() {
         {
           vessels && vessels.map(vessel => (
             <li key={vessel.id} className="task-item">
-              <a href="#" onClick={() => dispatch(setSelectedVessel(vessel))}>{vessel.name}</a>
+              <a href="javascript:" onClick={() => dispatch(setSelectedVessel(vessel))}>{vessel.name}</a>
             </li>
           ))
         }

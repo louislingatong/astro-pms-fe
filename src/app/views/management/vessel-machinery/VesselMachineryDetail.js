@@ -17,7 +17,7 @@ const validator = new ReeValidate({
   interval: 'required',
 });
 
-function VesselMachineryDetail({data: localVesselMachinery, activeVessel: localActiveVessel}) {
+function VesselMachineryDetail({data: localVesselMachinery}) {
   const {Text} = Inputs;
 
   const dispatch = useDispatch();
@@ -95,23 +95,21 @@ function VesselMachineryDetail({data: localVesselMachinery, activeVessel: localA
   };
 
   const handleRowSelect = (selectedRow) => {
-    setFormDatas((prevState) => {
-      const state = {...prevState};
-      if (selectedRow.action === 'checked') {
-        state[selectedRow.id] = formData(selectedRow.id);
-      } else if (selectedRow.action === 'unchecked') {
-        delete state[selectedRow.id];
-      } else if (selectedRow.action === 'checked_all') {
-        selectedRow.ids.forEach((id) => {
-          state[id] = formData(id);
-        });
-      } else if (selectedRow.action === 'unchecked_all') {
-        selectedRow.ids.forEach((id) => {
-          delete state[id];
-        });
-      }
-      return state;
-    });
+    const newFormDatas = {...formDatas};
+    if (selectedRow.action === 'checked') {
+      newFormDatas[selectedRow.id] = formData(selectedRow.id);
+    } else if (selectedRow.action === 'unchecked') {
+      delete newFormDatas[selectedRow.id];
+    } else if (selectedRow.action === 'checked_all') {
+      selectedRow.ids.forEach((id) => {
+        newFormDatas[id] = formData(id);
+      });
+    } else if (selectedRow.action === 'unchecked_all') {
+      selectedRow.ids.forEach((id) => {
+        delete newFormDatas[id];
+      });
+    }
+    setFormDatas(newFormDatas);
   };
 
   const formData = (id) => {
@@ -214,7 +212,7 @@ function VesselMachineryDetail({data: localVesselMachinery, activeVessel: localA
 
   return (
     <React.Fragment>
-      <VesselMachineryForm data={localVesselMachinery} activeVessel={localActiveVessel}/>
+      <VesselMachineryForm data={localVesselMachinery}/>
       {
         hasId && (
           <React.Fragment>
@@ -228,6 +226,7 @@ function VesselMachineryDetail({data: localVesselMachinery, activeVessel: localA
                 <DataTable
                   data={localVesselMachinery.machinery.sub_categories}
                   columns={header}
+                  selectedRowIds={Object.keys(formDatas).map(Number)}
                   options={{
                     page: true,
                     pageInfo: true,
@@ -241,7 +240,6 @@ function VesselMachineryDetail({data: localVesselMachinery, activeVessel: localA
                   multiple
                   onSelect={handleRowSelect}
                   isLoading={isLoading}
-                  defaultSelectedRows={Object.keys(formDatas).map(Number)}
                 />
               </Col>
             </Row>

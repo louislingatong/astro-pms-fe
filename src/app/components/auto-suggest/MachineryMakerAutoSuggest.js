@@ -13,7 +13,7 @@ function MachineryMakerAutoSuggest(props) {
   const dispatch = useDispatch();
   const suggestions = useSelector(machineryMakers);
 
-  const [localValue, setLocalValue] = useState('');
+  const [localValue, setLocalValue] = useState();
   const [localSuggestions, setLocalSuggestions] = useState(suggestions);
 
   const debouncedLocalValue = useDebounce(localValue, 1000);
@@ -30,7 +30,7 @@ function MachineryMakerAutoSuggest(props) {
     }
   }, [debouncedLocalValue]);
 
-  const handleInputChange = (event, { newValue }) => {
+  const handleInputChange = (e, { newValue }) => {
     onChange({target: {name, value: newValue}});
   };
 

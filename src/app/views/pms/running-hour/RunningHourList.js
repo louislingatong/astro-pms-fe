@@ -1,43 +1,42 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {usePrevious} from '../../../utils/Hooks';
-import {Col, Row} from 'react-bootstrap';
-import {Box, Button, Content} from 'adminlte-2-react';
-import DataTable from '../../../components/DataTable';
 import {
-  vesselMachineryData,
-  vesselMachineryList,
+  runningHourData,
+  runningHourList,
   metaData,
   reqListStatus,
-  vesselMachineryListAsync
-} from '../../../store/vesselMachinerySlice';
+  runningHourListAsync} from '../../../store/runningHourSlice';
 import {activeVesselSubMenu} from '../../../store/navbarMenuSlice';
-import VesselMachinery from '../../../core/models/VesselMachinery';
-import Divider from '../../../components/Divider';
-import VesselMachineryDetail from '../vessel-machinery/VesselMachineryDetail';
-import Modal from '../../../components/Modal';
+import {Box, Button, Col, Content, Row} from 'adminlte-2-react';
+import DataTable from '../../../components/DataTable';
+import {usePrevious} from '../../../utils/Hooks';
+import {Divider, Modal} from '../../../components';
+import Vessel from '../../../core/models/Vessel';
+import VesselMachineryRunningHour from '../../../core/models/VesselMachineryRunningHour';
+import RunningHourForm from "../form/RunningHourForm";
+import RunningHourDetail from "./RunningHourDetail";
 import VesselDepartmentSelect from "../../../components/select/VesselDepartmentSelect";
-import Vessel from "../../../core/models/Vessel";
 
-function VesselMachineryList({name}) {
+function RunningHourList({name}) {
   const dispatch = useDispatch();
 
   const activeVessel = useSelector(activeVesselSubMenu);
-  const vesselMachineries = useSelector(vesselMachineryList);
-  const vesselMachinery = useSelector(vesselMachineryData);
+  const runningHour = useSelector(runningHourData);
+  const runningHours = useSelector(runningHourList);
   const meta = useSelector(metaData);
   const status = useSelector(reqListStatus);
 
   const isLoading = status === 'loading';
 
-  const [localVesselMachinery, setLocalVesselMachinery] = useState(new VesselMachinery());
-  const [localVesselMachineries, setLocalVesselMachineries] = useState(vesselMachineries);
-  const [vesselMachineryModalShow, setVesselMachineryModalShow] = useState(false);
+  const [localVesselMachineryRunningHour, setLocalVesselMachineryRunningHour] = useState(new VesselMachineryRunningHour());
+  const [localVesselMachineryRunningHours, setLocalVesselMachineryRunningHours] = useState(runningHours);
+  const [runningHourModalShow, setRunningHourModalShow] = useState(false);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [params, setParams] = useState({vessel: activeVessel.name});
   const [filters, setFilters] = useState({});
 
-  const prevLocalVesselMachinery = usePrevious(localVesselMachinery);
+  const prevVesselMachineryRunningHours = usePrevious(localVesselMachineryRunningHours);
+  const prevLocalVesselMachineryRunningHour = usePrevious(localVesselMachineryRunningHour);
   const prevParams = usePrevious(params);
   const prevFilters = usePrevious(filters);
 
@@ -48,31 +47,32 @@ function VesselMachineryList({name}) {
   }, []);
 
   useEffect(() => {
-    if (activeVessel && activeVessel.id && !localVesselMachineries.length) {
+    if (activeVessel && activeVessel.id && !localVesselMachineryRunningHours.length) {
       setParams({vessel: activeVessel.name});
     }
   }, [activeVessel]);
 
   useEffect(() => {
-    if (localVesselMachineries) {
-      setLocalVesselMachineries(vesselMachineries);
+    if (prevVesselMachineryRunningHours) {
+      setLocalVesselMachineryRunningHours(runningHours);
     }
-  }, [vesselMachineries]);
+  }, [runningHours]);
 
   useEffect(() => {
-    if (prevLocalVesselMachinery) {
-      setLocalVesselMachinery(vesselMachinery);
+    if (prevLocalVesselMachineryRunningHour) {
+      setLocalVesselMachineryRunningHour(runningHour);
+      handleModalClose();
       initList();
     }
-  }, [vesselMachinery]);
+  }, [runningHour]);
 
   useEffect(() => {
-    if (prevLocalVesselMachinery
-      && (prevLocalVesselMachinery.id !== localVesselMachinery.id)
-      && !!localVesselMachinery.id) {
+    if (prevLocalVesselMachineryRunningHour
+      && (prevLocalVesselMachineryRunningHour.id !== localVesselMachineryRunningHour.id)
+      && !!localVesselMachineryRunningHour.id) {
       handleModalOpen();
     }
-  }, [localVesselMachinery]);
+  }, [localVesselMachineryRunningHour]);
 
   useEffect(() => {
     if (prevParams && prevFilters) {
@@ -81,7 +81,7 @@ function VesselMachineryList({name}) {
   }, [params, filters]);
 
   const initList = () => {
-    dispatch(vesselMachineryListAsync({...params, ...filters}));
+    dispatch(runningHourListAsync({...params, ...filters}));
   };
 
   const handleRowSelect = (selectedRow) => {
@@ -97,7 +97,7 @@ function VesselMachineryList({name}) {
       newSelectedRowIds = [];
     } else {
       newSelectedRowIds = [selectedRow.id];
-      setLocalVesselMachinery(selectedRow);
+      setLocalVesselMachineryRunningHour(selectedRow);
     }
     setSelectedRowIds(newSelectedRowIds);
   };
@@ -111,16 +111,20 @@ function VesselMachineryList({name}) {
   };
 
   const handleSearchChange = (keyword) => {
-    const {vessel, department} = params;
-    if (keyword) {
-      !!department
-        ? setParams({vessel, department, keyword})
-        : setParams({keyword});
-    } else {
-      !!department
-        ? setParams({vessel, department})
-        : setParams({});
-    }
+    const {vessel} = params;
+    keyword
+      ? setParams({vessel, keyword})
+      : setParams({vessel});
+  };
+
+  const handleModalOpen = () => {
+    setRunningHourModalShow(true);
+  };
+
+  const handleModalClose = () => {
+    setSelectedRowIds([]);
+    setLocalVesselMachineryRunningHour(new VesselMachineryRunningHour());
+    setRunningHourModalShow(false);
   };
 
   const handleFilterChange = (e) => {
@@ -134,41 +138,31 @@ function VesselMachineryList({name}) {
     });
   };
 
-  const handleModalOpen = () => {
-    setVesselMachineryModalShow(true);
-  };
-
-  const handleModalClose = () => {
-    setSelectedRowIds([]);
-    setLocalVesselMachinery(new VesselMachinery());
-    setVesselMachineryModalShow(false);
-  };
-
   const header = [
     {
-      title: 'Department',
-      data: 'department',
-      render: (department, row) => row.machinery.department.name,
+      title: 'Machinery Code',
+      data: 'code',
+      render: (code, row) => row.machinery.code_name,
     },
     {
-      title: 'Machinery',
+      title: 'Machinery Name',
       data: 'machinery',
       render: machinery => machinery.name,
     },
     {
-      title: 'Model',
-      data: 'model',
-      render: (model, row) => row.machinery.model.name,
+      title: 'Running Hours',
+      data: 'running_hour',
+      render: (runningHour, row) => row.current_running_hour.running_hours,
     },
     {
-      title: 'Maker',
-      data: 'maker',
-      render: (maker, row) => row.machinery.maker.name,
+      title: 'Updating Date',
+      data: 'updating_date',
+      render: (updatingDate, row) => row.current_running_hour.updating_date,
     },
     {
-      title: 'In-charge',
-      data: 'inchargeRank',
-      render: (inchargeRank, row) => row.incharge_rank.name,
+      title: 'Encoded Date',
+      data: 'create_at',
+      render: (createdAt, row) => row.current_running_hour.created_at,
     },
   ];
 
@@ -177,18 +171,9 @@ function VesselMachineryList({name}) {
       <Content title={name} browserTitle={name}>
         <Row>
           <Col xs={12}>
-            <Button
-              type="primary"
-              text="Add New Vessel Machinery"
-              onClick={handleModalOpen}
-              pullRight
-            />
-          </Col>
-          <Divider/>
-          <Col xs={12}>
             <Box>
               <Row>
-                <Col xs={12} md={4} lg={2}>
+                <Col xs={12} sm={4} md={3} lg={2}>
                   <VesselDepartmentSelect
                     name="department"
                     id="departmentFilterSelect"
@@ -203,7 +188,7 @@ function VesselMachineryList({name}) {
                 <Col xs={12}>
                   <DataTable
                     api
-                    data={localVesselMachineries}
+                    data={localVesselMachineryRunningHours}
                     columns={header}
                     selectedRowIds={selectedRowIds}
                     options={{
@@ -218,7 +203,6 @@ function VesselMachineryList({name}) {
                     responsive
                     border
                     meta={meta}
-                    multiple
                     rowSelect
                     onSelect={handleRowSelect}
                     onPageChange={handlePageChange}
@@ -227,29 +211,22 @@ function VesselMachineryList({name}) {
                     isLoading={isLoading}
                   />
                 </Col>
-                <Divider/>
-                <Col xs={12}>
-                  {
-                    !!selectedRowIds.length
-                    && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
-                  }
-                </Col>
               </Row>
             </Box>
           </Col>
         </Row>
         <Modal
-          show={vesselMachineryModalShow}
-          title={localVesselMachinery.id ? 'Vessel Machinery Details' : 'Add New Vessel Machinery'}
-          modalSize="lg"
+          show={runningHourModalShow}
+          title='Update Running Hours'
+          modalSize="md"
           closeButton
           onHide={handleModalClose}
         >
-          <VesselMachineryDetail data={localVesselMachinery}/>
+          <RunningHourDetail data={localVesselMachineryRunningHour}/>
         </Modal>
       </Content>
     </React.Fragment>
   )
 }
 
-export default VesselMachineryList;
+export default RunningHourList;

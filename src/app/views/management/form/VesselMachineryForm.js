@@ -10,7 +10,7 @@ import VesselMachinery from '../../../core/models/VesselMachinery';
 import moment from 'moment';
 import MachinerySelect from '../../../components/select/MachinerySelect';
 import InchargeRankSelect from '../../../components/select/InchargeRankSelect';
-import VesselSelect from '../../../components/select/VesselSelect';
+import {activeVesselSubMenu} from '../../../store/navbarMenuSlice';
 
 const validator = new ReeValidate({
   vessel: 'required',
@@ -19,15 +19,16 @@ const validator = new ReeValidate({
   installationDate: 'required',
 });
 
-function VesselMachineryForm({data: localVesselMachinery, activeVessel: localActiveVessel}) {
+function VesselMachineryForm({data: localVesselMachinery}) {
   const {Date, Text} = Inputs;
 
   const dispatch = useDispatch();
   const status = useSelector(reqDataStatus);
+  const activeVessel = useSelector(activeVesselSubMenu);
 
   const [isViewing, setIsViewing] = useState(false);
   const [formData, setFormData] = useState({
-    vessel: localActiveVessel.name,
+    vessel: activeVessel.name,
     machinery: localVesselMachinery.machinery.name,
     incharge_rank: localVesselMachinery.incharge_rank.name,
     installation_date: localVesselMachinery.installed_date

@@ -24,7 +24,7 @@ function Layout({children}) {
     <React.Fragment>
       {
         isAuthenticated
-          ? <PrivateLayout />
+          ? <PrivateLayout>{children}</PrivateLayout>
           : <PublicLayout>{children}</PublicLayout>
       }
     </React.Fragment>

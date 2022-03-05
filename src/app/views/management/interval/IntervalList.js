@@ -20,40 +20,41 @@ function IntervalList({name}) {
   const intervals = useSelector(intervalList);
   const interval = useSelector(intervalData);
   const meta = useSelector(metaData);
-  const listStatus = useSelector(reqListStatus);
+  const status = useSelector(reqListStatus);
 
-  const [localIntervals, setLocalIntervals] = useState(intervals);
+  const isLoading = status === 'loading';
+
   const [localInterval, setLocalInterval] = useState(new Interval());
-  const [params, setParams] = useState({});
+  const [localIntervals, setLocalIntervals] = useState(intervals);
   const [intervalModalShow, setIntervalModalShow] = useState(false);
-  const [selectedIntervalIds, setSelectedIntervalIds] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
+  const [params, setParams] = useState({});
 
   const prevLocalInterval = usePrevious(localInterval);
   const prevParams = usePrevious(params);
 
-  const isLoading = listStatus === 'loading';
-
   useEffect(() => {
-    if (localIntervals && !localIntervals.length) {
-      initList();
-    }
-  }, [localIntervals]);
+    initList();
+  }, []);
 
   useEffect(() => {
     if (localIntervals) {
       setLocalIntervals(intervals);
     }
-  }, [localIntervals, intervals]);
+  }, [intervals]);
 
   useEffect(() => {
     if (prevLocalInterval) {
+      setLocalInterval(interval);
       handleModalClose();
       initList();
     }
   }, [interval]);
 
   useEffect(() => {
-    if (prevLocalInterval && prevLocalInterval.id !== localInterval.id && !!localInterval.id) {
+    if (prevLocalInterval
+      && (prevLocalInterval.id !== localInterval.id)
+      && !!localInterval.id) {
       handleModalOpen();
     }
   }, [localInterval]);
@@ -68,12 +69,22 @@ function IntervalList({name}) {
     dispatch(intervalListAsync(params));
   };
 
-  const handleRowSelect = (row) => {
-    if (Array.isArray(row)) {
-      setSelectedIntervalIds(row);
+  const handleRowSelect = (selectedRow) => {
+    let newSelectedRowIds = selectedRowIds.slice();
+    if (selectedRow.action === 'checked') {
+      newSelectedRowIds.push(selectedRow.id);
+    } else if (selectedRow.action === 'unchecked') {
+      const i = newSelectedRowIds.indexOf(selectedRow);
+      newSelectedRowIds.splice(i, 1)
+    } else if (selectedRow.action === 'checked_all') {
+      newSelectedRowIds = selectedRow.ids;
+    } else if (selectedRow.action === 'unchecked_all') {
+      newSelectedRowIds = [];
     } else {
-      setLocalInterval(row);
+      newSelectedRowIds = [selectedRow.id];
+      setLocalInterval(selectedRow);
     }
+    setSelectedRowIds(newSelectedRowIds);
   }
 
   const handlePageChange = (page) => {
@@ -98,6 +109,7 @@ function IntervalList({name}) {
   };
 
   const handleModalClose = () => {
+    setSelectedRowIds([]);
     setLocalInterval(new Interval());
     setIntervalModalShow(false);
   };
@@ -131,6 +143,7 @@ function IntervalList({name}) {
                     api
                     data={localIntervals}
                     columns={header}
+                    selectedRowIds={selectedRowIds}
                     options={{
                       page: true,
                       pageInfo: true,
@@ -153,8 +166,10 @@ function IntervalList({name}) {
                 </Col>
                 <Divider/>
                 <Col xs={12}>
-                  {!!selectedIntervalIds.length
-                  && <Button type="danger" text={`Delete (${selectedIntervalIds.length})`} pullRight/>}
+                  {
+                    !!selectedRowIds.length
+                      && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
+                  }
                 </Col>
               </Row>
             </Box>

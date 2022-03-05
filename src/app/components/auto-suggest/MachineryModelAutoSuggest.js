@@ -13,7 +13,7 @@ function MachineryModelAutoSuggest(props) {
   const dispatch = useDispatch();
   const suggestions = useSelector(machineryModels);
 
-  const [localValue, setLocalValue] = useState('');
+  const [localValue, setLocalValue] = useState();
   const [localSuggestions, setLocalSuggestions] = useState(suggestions);
 
   const debouncedLocalValue = useDebounce(localValue, 1000);
@@ -30,8 +30,7 @@ function MachineryModelAutoSuggest(props) {
     }
   }, [debouncedLocalValue]);
 
-  const handleInputChange = (event, { newValue }) => {
-    console.log(newValue);
+  const handleInputChange = (e, { newValue }) => {
     onChange({target: {name, value: newValue}});
   };
 

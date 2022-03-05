@@ -5,7 +5,7 @@ import Layout from '../layout';
 import Loader from '../components/Loader';
 import {authenticated} from '../store/authSlice';
 
-function PrivateRoutes({component, ...rest}) {
+function PrivateRoutes({component: Component, ...rest}) {
   const location = useLocation();
   const isAuthenticated = useSelector(authenticated);
 
@@ -23,10 +23,12 @@ function PrivateRoutes({component, ...rest}) {
   }
 
   return (
-    <Route {...rest} render={() => {
+    <Route {...rest} render={(props) => {
       return (
         <Suspense fallback={<Loader/>}>
-          <Layout />
+          <Layout>
+            <Component {...props} {...rest} />
+          </Layout>
         </Suspense>
       )
     }}/>

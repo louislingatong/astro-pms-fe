@@ -7,6 +7,15 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.wrapper {
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+.content-wrapper {
+  height: calc(100vh - 101px) !important;
+}
+
 table {
   margin-bottom: 0 !important;
 }

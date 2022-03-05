@@ -23,7 +23,7 @@ function PublicRoutes({component: Component, ...rest}) {
   }
 
   return (
-    <Route {...rest} render={props => {
+    <Route {...rest} render={(props) => {
       return (
         <Suspense fallback={<Loader/>}>
           <Layout>

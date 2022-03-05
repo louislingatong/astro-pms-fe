@@ -22,7 +22,7 @@ export const navbarMenuSlice = createSlice({
   initialState,
   reducers: {
     setSelectedVessel: (state, action) => {
-      state.selectedSubMenuVessel = action.payload;
+      state.activeVesselSubMenu = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -33,7 +33,7 @@ export const navbarMenuSlice = createSlice({
       .addCase(vesselListAsync.fulfilled, (state, action) => {
         state.vesselSubMenusStatus = 'idle';
         state.vesselSubMenus = action.payload;
-        state.activeVesselSubMenu = action.payload[0];
+        state.activeVesselSubMenu = action.payload.length ? action.payload[0] : new Vessel();
       })
       .addCase(vesselListAsync.rejected, (state, action) => {
         state.vesselSubMenusStatus = 'idle';

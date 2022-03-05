@@ -1,9 +1,10 @@
 import React, {useEffect, useRef} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Inputs} from 'adminlte-2-react';
 import Transform from '../../utils/Transformer';
-import {vesselDepartmentsAsync} from '../../store/optionSlice';
+import {vesselDepartments as options, vesselDepartmentsAsync} from '../../store/optionSlice';
+import {usePrevious} from "../../utils/Hooks";
 
 function VesselDepartmentSelect(props) {
   const {name, id, label, labelPosition = 'none', placeholder = '', allowClear = false} = props;
@@ -13,29 +14,42 @@ function VesselDepartmentSelect(props) {
   const {Select2} = Inputs;
 
   const dispatch = useDispatch();
+  const defaultOptions = useSelector(options);
 
   const localValue = useRef(value);
+  const localDefaultOptions = useRef([]);
+  const openDropdownMenu = useRef(false);
+
+  const preLocalValue = usePrevious(localValue);
 
   useEffect(() => {
-    localValue.current = value;
-  }, [value]);
+    const currentLocalDefaultOptions = localDefaultOptions.current;
+    const currentOpenDropdownMenu = openDropdownMenu.current;
+    if (!currentLocalDefaultOptions.length && currentOpenDropdownMenu) {
+      localDefaultOptions.current = Transform.toSelectOptions(defaultOptions);
+      openDropdownMenu.current = false;
+    }
+  }, [defaultOptions]);
 
   const openOptions = (e) => {
-    localValue.current = e.params.data;
+    localValue.current = Array.isArray(e.params.data) ? e.params.data[0] : e.params.data;
+    openDropdownMenu.current = true;
   };
 
   const fetchOptions = (data, success) => {
     const currentLocalValue = localValue.current;
-
+    const currentLocalDefaultOptions = localDefaultOptions.current;
     const params = {};
-
+    if (!data.searchValue && !currentLocalValue && !preLocalValue && currentLocalDefaultOptions.length) {
+      success(currentLocalDefaultOptions);
+      return;
+    }
     if (!data.searchValue && currentLocalValue) {
-      params['keyword'] = currentLocalValue;
+      params['keyword'] = currentLocalValue
     }
     if ((data.searchValue && !currentLocalValue) || (data.searchValue && currentLocalValue)) {
       params['keyword'] = data.searchValue;
     }
-
     dispatch(vesselDepartmentsAsync(params))
       .unwrap()
       .then((response) => {

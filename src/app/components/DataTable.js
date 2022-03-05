@@ -11,8 +11,8 @@ import {PulseLoader} from 'react-spinners';
 function DataTable(props) {
   const {Text, Select} = Inputs;
 
-  const {data = [], columns, defaultSelectedRows = [], condensed, striped, hover, border, responsive, fixed, noMargin} = props;
-  const {api, options = {}, meta, multiple = false, rowSelect = false, isLoading = false} = props;
+  const {data = [], columns, selectedRowIds = [], condensed, striped, hover, border, responsive, fixed, noMargin} = props;
+  const {api, options = {}, meta, multiple = false, rowSelect = false, isLoading = false, clearSelectedRows = false} = props;
   const {onPageLengthChange, onSearchChange, onPageChange, onSelect} = props;
   const {page, pageInfo, search, pageLength} = options;
 
@@ -28,22 +28,26 @@ function DataTable(props) {
     lastPage: 1,
   });
   const [searchString, setSearchString] = useState();
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [unselectedRows, setUnselectedRows] = useState([]);
-  const [checkedAction, setCheckedAction] = useState();
-  const [checkedRow, setCheckedRow] = useState();
+  const [localSelectedRowIds, setLocalSelectedRowIds] = useState([]);
+  const [localUnselectedRowIds, setLocalUnselectedRowIds] = useState([]);
+  const [checkedRowId, setCheckedRowId] = useState(0);
+  const [checkedAction, setCheckedAction] = useState('unchecked_all');
 
   const debouncedSearchString = useDebounce(searchString, 1000);
   const prevLocalMeta = usePrevious(localMeta);
-  const prevSelectedRows = usePrevious(selectedRows);
+  const prevSelectedRows = usePrevious(localSelectedRowIds);
 
   const {totalElements, activePage, pageSize} = localMeta;
 
   useEffect(() => {
-    if (defaultSelectedRows.length && !selectedRows.length) {
-      setSelectedRows(defaultSelectedRows);
+    if (localSelectedRowIds && !localSelectedRowIds.length) {
+      setLocalSelectedRowIds(selectedRowIds);
     }
-  }, [defaultSelectedRows]);
+    if (!selectedRowIds.length && localSelectedRowIds.length) {
+      setCheckedAction('unchecked_all');
+      setLocalSelectedRowIds([]);
+    }
+  }, [selectedRowIds]);
 
   useEffect(() => {
     if (!meta) {
@@ -80,25 +84,25 @@ function DataTable(props) {
   }, [localMeta]);
 
   useEffect(() => {
-    if (prevSelectedRows && prevSelectedRows.length !== selectedRows.length) {
+    if (prevSelectedRows && prevSelectedRows.length !== localSelectedRowIds.length) {
       if (checkedAction === 'checked' || checkedAction === 'unchecked') {
         onSelect({
           action: checkedAction,
-          id: checkedRow
+          id: checkedRowId
         });
       } else if (checkedAction === 'checked_all') {
         onSelect({
           action: checkedAction,
-          ids: selectedRows
+          ids: localSelectedRowIds
         })
       } else if (checkedAction === 'unchecked_all') {
         onSelect({
           action: checkedAction,
-          ids: unselectedRows
+          ids: localUnselectedRowIds
         })
       }
     }
-  }, [selectedRows]);
+  }, [localSelectedRowIds]);
 
   useEffect(() => {
     if (debouncedSearchString !== undefined) {
@@ -175,41 +179,39 @@ function DataTable(props) {
       action = 'checked_all'
       ids = localData.map((item) => item.id)
     } else {
-      setUnselectedRows(selectedRows);
+      setLocalUnselectedRowIds(localSelectedRowIds);
     }
     setCheckedAction(action);
-    setSelectedRows(ids);
+    setLocalSelectedRowIds(ids);
   };
 
   const handleRowCheck = (row) => {
     let action;
-    setSelectedRows((prevState => {
-      const state = prevState.slice();
-      const index = state.indexOf(row.id);
-      if (index === -1) {
-        action = 'checked'
-        state.push(row.id);
-      } else {
-        action = 'unchecked'
-        state.splice(index,1);
-      }
-      return state;
-    }));
-    setCheckedRow(row.id);
+    const newLocalSelectedIds = localSelectedRowIds.slice();
+    const index = newLocalSelectedIds.indexOf(row.id);
+    if (index === -1) {
+      action = 'checked';
+      newLocalSelectedIds.push(row.id);
+    } else {
+      action = 'unchecked'
+      newLocalSelectedIds.splice(index,1);
+    }
+    setCheckedRowId(row.id);
     setCheckedAction(action);
+    setLocalSelectedRowIds(newLocalSelectedIds);
   };
 
-  const allRowsCheck = () => {
+  const allRowsChecked = () => {
     const localDataSize = localData.length
-    return localDataSize > 0 && localDataSize === selectedRows.length;
+    return localDataSize > 0 && localDataSize === localSelectedRowIds.length;
   };
 
   const rowChecked = (data) => {
-    return selectedRows.indexOf(data.id) !== -1;
+    return localSelectedRowIds.indexOf(data.id) !== -1;
   };
 
   const checkColumn = [{
-    title: <div className="text-center"><input type="checkbox" checked={allRowsCheck()} onChange={handleAllRowsCheck}/></div>,
+    title: <div className="text-center"><input type="checkbox" checked={allRowsChecked()} onChange={handleAllRowsCheck}/></div>,
     data: 'check',
     width: 10
   }];
@@ -389,7 +391,7 @@ DataTable.propTypes = {
   api: PropTypes.bool,
   data: PropTypes.array,
   columns: PropTypes.array,
-  defaultSelectedRows: PropTypes.array,
+  selectedRowIds: PropTypes.array,
   options: PropTypes.object,
   hover: PropTypes.bool,
   striped: PropTypes.bool,
@@ -406,6 +408,7 @@ DataTable.propTypes = {
   onPageLengthChange: PropTypes.func,
   onPageChange: PropTypes.func,
   isLoading: PropTypes.bool,
+  clearSelectedRows: PropTypes.bool,
 };
 
 export default DataTable;

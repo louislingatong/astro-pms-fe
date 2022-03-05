@@ -5,7 +5,7 @@ import Work from './Work';
 
 export default function VesselMachinerySubCategoryWork(data = {}) {
   this.id = data.id ? data.id : 0;
-  this.code = data.name ? data.name : '';
+  this.code = data.code ? data.code : '';
   this.due_date = data.due_date ? data.due_date : '';
   this.interval = data.interval
     ? new Interval(data.interval)

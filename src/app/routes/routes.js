@@ -47,13 +47,13 @@ const routes = [
     name: 'Running Hours',
     path: '/running-hours',
     auth: true,
-    component: lazy(() => import('../views/pms/RunningHourList')),
+    component: lazy(() => import('../views/pms/running-hour/RunningHourList')),
   },
   {
     name: 'Works',
     path: '/works',
     auth: true,
-    component: lazy(() => import('../views/pms/WorkList')),
+    component: lazy(() => import('../views/pms/work/WorkList')),
   },
   {
     name: 'Login',
