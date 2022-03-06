@@ -1,14 +1,16 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {fetchAll as fetchAllVessels} from '../services/vesselService';
 import {fetchAll as fetchAllVesselOwners} from '../services/vesselOwnerService';
 import {fetchAll as fetchAllVesselDepartments} from '../services/vesselDepartmentService';
-import {fetchAll as fetchAllVessels} from '../services/vesselService';
 import {fetchAll as fetchAllMachineryModels} from '../services/machineryModelService';
 import {fetchAll as fetchAllMachineryMakers} from '../services/machineryMakerService';
 import {fetchAll as fetchAllMachineries} from '../services/machineryService';
 import {fetchAll as fetchAllMachinerySubCategoryDescriptions} from '../services/machinerySubCategoryDescriptionService';
 import {fetchAll as fetchAllIntervals} from '../services/intervalService';
-import {fetchAll as fetchAllRanks} from '../services/rankService';
 import {fetchAll as fetchAllIntervalUnits} from '../services/intervalUnitService';
+import {fetchAll as fetchAllRanks} from '../services/rankService';
+import {fetchAll as fetchAllEmployeeDepartments} from '../services/employeeDepartmentService';
+import Vessel from '../core/models/Vessel';
 import vesselOwner from '../core/models/VesselOwner';
 import VesselDepartment from '../core/models/VesselDepartment';
 import MachineryModel from '../core/models/MachineryModel';
@@ -16,9 +18,9 @@ import MachineryMaker from '../core/models/MachineryMaker';
 import Machinery from '../core/models/Machinery';
 import MachinerySubCategoryDescription from '../core/models/MachinerySubCategoryDescription';
 import Interval from '../core/models/Interval';
-import Rank from '../core/models/InChargeRank';
-import Vessel from '../core/models/Vessel';
 import IntervalUnit from '../core/models/IntervalUnit';
+import Rank from '../core/models/InChargeRank';
+import EmployeeDepartment from '../core/models/EmployeeDepartment';
 import Transform from '../utils/Transformer';
 
 const initialState = {
@@ -32,6 +34,7 @@ const initialState = {
   intervals: [],
   intervalUnits: [],
   ranks: [],
+  employeeDepartments: []
 };
 
 export const vesselOwnersAsync = createAsyncThunk(
@@ -115,6 +118,13 @@ export const ranksAsync = createAsyncThunk(
   }
 );
 
+export const employeeDepartmentsAsync = createAsyncThunk(
+  'option/fetchAllEmployeeDepartments',
+  async (params) => {
+    const response = await fetchAllEmployeeDepartments(params);
+    return Transform.fetchCollection(response.data, EmployeeDepartment);
+  }
+);
 
 export const optionSlice = createSlice({
   name: 'option',
@@ -123,44 +133,37 @@ export const optionSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(vesselOwnersAsync.fulfilled, (state, action) => {
-        state.vesselOwnersStatus = 'idle';
         state.vesselOwners = action.payload;
       })
       .addCase(vesselDepartmentsAsync.fulfilled, (state, action) => {
-        state.vesselDepartmentsStatus = 'idle';
         state.vesselDepartments = action.payload;
       })
       .addCase(vesselsAsync.fulfilled, (state, action) => {
-        state.vesselsStatus = 'idle';
         state.vessels = action.payload;
       })
       .addCase(machineryModelsAsync.fulfilled, (state, action) => {
-        state.machineryModelsStatus = 'idle';
         state.machineryModels = action.payload;
       })
       .addCase(machineryMakersAsync.fulfilled, (state, action) => {
-        state.machineryMakersStatus = 'idle';
         state.machineryMakers = action.payload;
       })
       .addCase(machineriesAsync.fulfilled, (state, action) => {
-        state.machineriesStatus = 'idle';
         state.machineries = action.payload;
       })
       .addCase(machinerySubCategoryDescriptionsAsync.fulfilled, (state, action) => {
-        state.machinerySubCategoryDescriptionsStatus = 'idle';
         state.machinerySubCategoryDescriptions = action.payload;
       })
       .addCase(intervalsAsync.fulfilled, (state, action) => {
-        state.intervalsStatus = 'idle';
         state.intervals = action.payload;
       })
       .addCase(intervalUnitsAsync.fulfilled, (state, action) => {
-        state.intervalUnitsStatus= 'idle';
         state.intervalUnits = action.payload;
       })
       .addCase(ranksAsync.fulfilled, (state, action) => {
-        state.ranksStatus = 'idle';
         state.ranks = action.payload;
+      })
+      .addCase(employeeDepartmentsAsync.fulfilled, (state, action) => {
+        state.employeeDartments = action.payload;
       })
   },
 });
@@ -175,5 +178,6 @@ export const machinerySubCategoryDescriptions = state => state.option.machineryS
 export const intervals = state => state.option.intervals;
 export const intervalUnits = state => state.option.intervalUnits;
 export const ranks = state => state.option.ranks;
+export const employeeDepartments = state => state.option.employeeDepartments;
 
 export default optionSlice.reducer;

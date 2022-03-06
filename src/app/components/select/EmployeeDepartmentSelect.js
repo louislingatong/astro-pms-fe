@@ -3,11 +3,11 @@ import {useDispatch, useSelector} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Inputs} from 'adminlte-2-react';
 import Transform from '../../utils/Transformer';
-import {machineries as options, machineriesAsync} from '../../store/optionSlice';
+import {employeeDepartments as options, employeeDepartmentsAsync} from '../../store/optionSlice';
 import {usePrevious} from '../../utils/Hooks';
 
-function MachinerySelect(props) {
-  const {name, id, label, labelPosition = 'none', placeholder = '', allowClear} = props;
+function EmployeeDepartmentSelect(props) {
+  const {name, id, label, labelPosition = 'none', placeholder = '', allowClear = false} = props;
   const {form = false, value, disabled, type, help} = props;
   const {onChange} = props;
 
@@ -45,12 +45,12 @@ function MachinerySelect(props) {
       return;
     }
     if (!data.searchValue && currentLocalValue) {
-      params['keyword'] = currentLocalValue;
+      params['keyword'] = currentLocalValue
     }
     if ((data.searchValue && !currentLocalValue) || (data.searchValue && currentLocalValue)) {
       params['keyword'] = data.searchValue;
     }
-    dispatch(machineriesAsync(params))
+    dispatch(employeeDepartmentsAsync(params))
       .unwrap()
       .then((response) => {
         const transformedOptions = Transform.toSelectOptions(response);
@@ -77,17 +77,13 @@ function MachinerySelect(props) {
   )
 }
 
-MachinerySelect.propTypes = {
+EmployeeDepartmentSelect.propTypes = {
   name: PropTypes.string,
   id: PropTypes.string,
   label: PropTypes.string,
   labelPosition: PropTypes.oneOf(['above', 'left', 'none']),
   placeholder: PropTypes.string,
-  defaultValue: PropTypes.string,
-  value: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number
-  ]),
+  value: PropTypes.string,
   allowClear: PropTypes.bool,
   disabled: PropTypes.bool,
   type: PropTypes.string,
@@ -96,4 +92,4 @@ MachinerySelect.propTypes = {
   onChange: PropTypes.func,
 };
 
-export default MachinerySelect;
+export default EmployeeDepartmentSelect;

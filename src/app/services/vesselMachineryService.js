@@ -12,18 +12,6 @@ export function fetchAll(params) {
   })
 }
 
-export function fetchById(id) {
-  return new Promise((resolve, reject) => {
-    Http.get(`vessel-machineries/${id}`)
-      .then(res => {
-        resolve(res);
-      })
-      .catch(err => {
-        reject(err);
-      })
-  })
-}
-
 export function add(data) {
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {

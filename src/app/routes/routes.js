@@ -14,16 +14,28 @@ const routes = [
     component: lazy(() => import('../views/Profile')),
   },
   {
-    name: 'Users',
-    path: '/users',
+    name: 'Employees',
+    path: '/employees',
     auth: true,
-    component: lazy(() => import('../views/management/UserList')),
+    component: lazy(() => import('../views/management/employee/EmployeeList')),
+  },
+  {
+    name: 'Employee Details',
+    path: '/employees/:id',
+    auth: true,
+    component: lazy(() => import('../views/management/employee/EmployeeView')),
   },
   {
     name: 'Vessels',
     path: '/vessels',
     auth: true,
-    component: lazy(() => import('../views/management/VesselList')),
+    component: lazy(() => import('../views/management/vessel/VesselList')),
+  },
+  {
+    name: 'Vessel Details',
+    path: '/vessels/:id',
+    auth: true,
+    component: lazy(() => import('../views/management/vessel/VesselView')),
   },
   {
     name: 'Machinery',
@@ -58,7 +70,7 @@ const routes = [
   {
     name: 'Login',
     path: '/login',
-    component: lazy(() => import('../views/auth/Login')),
+    component: lazy(() => import('../views/auth/login/Login')),
   },
   {
     name: 'Forgot Password',

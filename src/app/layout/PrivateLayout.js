@@ -3,7 +3,7 @@ import AdminLTE, {Footer, Navbar, Sidebar} from 'adminlte-2-react';
 import NavbarMenu from './components/NavbarMenu';
 import SidebarMenu from './components/SidebarMenu';
 // import Dashboard from '../views/Dashboard';
-// import UserList from '../views/management/UserList';
+// import EmployeeList from '../views/management/EmployeeList';
 // import MachineryList from '../views/management/machinery/MachineryList';
 // import IntervalList from '../views/management/interval/IntervalList';
 // import VesselList from '../views/management/VesselList';
@@ -14,9 +14,10 @@ import SidebarMenu from './components/SidebarMenu';
 function PrivateLayout({children}) {
   return (
     <AdminLTE title={['ASTRO', 'PMS']}
-              titleShort="PMS"
+              titleShort={['A', 'PMS']}
               theme="black"
-              footer={<Footer/>}>
+              footer={<Footer/>}
+    >
       <Navbar.Core>
         <NavbarMenu/>
       </Navbar.Core>
@@ -25,7 +26,7 @@ function PrivateLayout({children}) {
       </Sidebar.Core>
       {children}
       {/*<Dashboard path="/" exact name="Dashboard"/>*/}
-      {/*<UserList path="/users" exact name="Users"/>*/}
+      {/*<EmployeeList path="/users" exact name="Users"/>*/}
       {/*<VesselList path="/vessels" exact name="Vessels"/>*/}
       {/*<MachineryList path="/machinery" exact name="Machinery"/>*/}
       {/*<VesselMachineryList path="/vessel-machinery" exact name="Vessel Machinery"/>*/}

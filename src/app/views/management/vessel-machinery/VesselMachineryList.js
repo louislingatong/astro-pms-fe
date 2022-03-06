@@ -16,8 +16,7 @@ import VesselMachinery from '../../../core/models/VesselMachinery';
 import Divider from '../../../components/Divider';
 import VesselMachineryDetail from '../vessel-machinery/VesselMachineryDetail';
 import Modal from '../../../components/Modal';
-import VesselDepartmentSelect from "../../../components/select/VesselDepartmentSelect";
-import Vessel from "../../../core/models/Vessel";
+import VesselDepartmentSelect from '../../../components/select/VesselDepartmentSelect';
 
 function VesselMachineryList({name}) {
   const dispatch = useDispatch();
@@ -227,7 +226,9 @@ function VesselMachineryList({name}) {
                     isLoading={isLoading}
                   />
                 </Col>
-                <Divider/>
+                <Col xs={12}>
+                  <Divider/>
+                </Col>
                 <Col xs={12}>
                   {
                     !!selectedRowIds.length

@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Col, Row} from 'react-bootstrap';
 import {Inputs, Button} from 'adminlte-2-react';
 import ReeValidate from 'ree-validate';
+import {loginAsync, reqLoginStatus} from '../../../store/authSlice';
 import Transform from '../../../utils/Transformer';
-import {loginAsync} from '../../../store/authSlice';
 
 const validator = new ReeValidate({
   username: 'required|email',
@@ -15,13 +15,17 @@ function LoginForm(props) {
   const {Text} = Inputs;
 
   const dispatch = useDispatch();
+  const status = useSelector(reqLoginStatus);
+
   const [formData, setFormData] = useState({
     username: '',
     password: ''
   });
   const [formErrors, setFormErrors] = useState(validator.errors);
 
-  const handleOnChange = (e) => {
+  const isLoading = status === 'loading';
+
+  const handleInputChange = (e) => {
     const name = e.target.name;
     const value = e.target.value;
     const {errors} = validator;
@@ -62,9 +66,9 @@ function LoginForm(props) {
               labelPosition="none"
               placeholder="Email"
               iconRight="fa-envelope"
-              onChange={handleOnChange}
-              type={formErrors['value'] ? 'error' : ''}
-              help={formErrors['value']}
+              onChange={handleInputChange}
+              type={formErrors['username'] ? 'error' : ''}
+              help={formErrors['username']}
         />
       </Col>
       <Col xs={12}>
@@ -74,9 +78,9 @@ function LoginForm(props) {
               labelPosition="none"
               placeholder="Password"
               iconRight="fa-lock"
-              onChange={handleOnChange}
-              type={formErrors['value'] ? 'error' : ''}
-              help={formErrors['value']}
+              onChange={handleInputChange}
+              type={formErrors['password'] ? 'error' : ''}
+              help={formErrors['password']}
         />
       </Col>
       <Col xs={12}>
@@ -86,7 +90,8 @@ function LoginForm(props) {
                 color="primary"
                 flat={true}
                 pullRight={true}
-                onClick={handleSubmitForm}/>
+                onClick={handleSubmitForm}
+                disabled={isLoading}/>
       </Col>
     </Row>
   )

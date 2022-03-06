@@ -2,7 +2,7 @@ import {configureStore} from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import profileReducer from './profileSlice';
 import navbarMenuReducer from './navbarMenuSlice';
-import userReducer from './userSlice';
+import employeeReducer from './employeeSlice';
 import vesselReducer from './vesselSlice';
 import machineryReducer from './machinerySlice';
 import intervalReducer from './intervalSlice';
@@ -16,7 +16,7 @@ export default configureStore({
     auth: authReducer,
     profile: profileReducer,
     navbarMenu: navbarMenuReducer,
-    user: userReducer,
+    employee: employeeReducer,
     vessel: vesselReducer,
     machinery: machineryReducer,
     interval: intervalReducer,
@@ -34,7 +34,7 @@ export default configureStore({
         ignoredPaths: [
           'navbarMenu',
           'profile',
-          'user',
+          'employee',
           'vessel',
           'machinery',
           'vesselMachinery',

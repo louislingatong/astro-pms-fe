@@ -7,6 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.user-panel .img-circle {
+  min-height: 30px !important;
+}
+
 .wrapper {
   height: auto !important;
   min-height: 100% !important;
@@ -14,6 +18,8 @@ body {
 
 .content-wrapper {
   height: calc(100vh - 101px) !important;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 table {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {Inputs} from 'adminlte-2-react';
 import Transform from '../../utils/Transformer';
 import {vesselDepartments as options, vesselDepartmentsAsync} from '../../store/optionSlice';
-import {usePrevious} from "../../utils/Hooks";
+import {usePrevious} from '../../utils/Hooks';
 
 function VesselDepartmentSelect(props) {
   const {name, id, label, labelPosition = 'none', placeholder = '', allowClear = false} = props;
@@ -17,7 +17,7 @@ function VesselDepartmentSelect(props) {
   const defaultOptions = useSelector(options);
 
   const localValue = useRef(value);
-  const localDefaultOptions = useRef([]);
+  const localDefaultOptions = useRef(Transform.toSelectOptions(defaultOptions));
   const openDropdownMenu = useRef(false);
 
   const preLocalValue = usePrevious(localValue);

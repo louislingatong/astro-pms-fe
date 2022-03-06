@@ -5,8 +5,8 @@ import {fetchAll, add} from '../services/runningHourService';
 import Transform from '../utils/Transformer';
 
 const initialState = {
-  list: [],
   data: new VesselMachineryRunningHour(),
+  list: [],
   meta: new Meta(),
   listStatus: 'idle',
   dataStatus: 'idle'

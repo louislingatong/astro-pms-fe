@@ -1,12 +1,12 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import Vessel from '../core/models/Vessel';
 import Meta from '../core/models/Meta';
-import {fetchAll, fetchById} from '../services/vesselService';
+import {add, edit, fetchAll, fetchById} from '../services/vesselService';
 import Transform from '../utils/Transformer';
 
 const initialState = {
-  list: [],
   data: new Vessel(),
+  list: [],
   meta: new Meta(),
   listStatus: 'idle',
   dataStatus: 'idle'
@@ -24,16 +24,36 @@ export const vesselListAsync = createAsyncThunk(
 
 export const vesselDataAsync = createAsyncThunk(
   'vessel/fetchVessel',
-  async () => {
-    const response = await fetchById()
-    return Transform.fetchObject(response.meta, Vessel);
+  async (id) => {
+    const response = await fetchById(id)
+    return Transform.fetchObject(response.data, Vessel);
+  }
+);
+
+export const vesselAddAsync = createAsyncThunk(
+  'vessel/AddNewVessel',
+  async (data) => {
+    const response = await add(data)
+    return Transform.fetchObject(response.data, Vessel);
+  }
+);
+
+export const vesselEditAsync = createAsyncThunk(
+  'vessel/EditVessel',
+  async (data) => {
+    const response = await edit(data)
+    return Transform.fetchObject(response.data, Vessel);
   }
 );
 
 export const vesselSlice = createSlice({
   name: 'vessel',
   initialState,
-  reducers: {},
+  reducers: {
+    setVesselData: (state, action) => {
+      state.data = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(vesselListAsync.pending, (state) => {
@@ -52,13 +72,35 @@ export const vesselSlice = createSlice({
       })
       .addCase(vesselDataAsync.fulfilled, (state, action) => {
         state.dataStatus = 'idle';
-        state.data = action.payload.data;
+        state.data = action.payload;
       })
       .addCase(vesselDataAsync.rejected, (state, action) => {
+        state.dataStatus = 'idle';
+      })
+      .addCase(vesselAddAsync.pending, (state) => {
+        state.dataStatus = 'loading';
+      })
+      .addCase(vesselAddAsync.fulfilled, (state, action) => {
+        state.dataStatus = 'idle';
+        state.data = action.payload;
+      })
+      .addCase(vesselAddAsync.rejected, (state, action) => {
+        state.dataStatus = 'idle';
+      })
+      .addCase(vesselEditAsync.pending, (state) => {
+        state.dataStatus = 'loading';
+      })
+      .addCase(vesselEditAsync.fulfilled, (state, action) => {
+        state.dataStatus = 'idle';
+        state.data = action.payload;
+      })
+      .addCase(vesselEditAsync.rejected, (state, action) => {
         state.dataStatus = 'idle';
       });
   },
 });
+
+export const {setVesselData} = vesselSlice.actions;
 
 export const vesselData = state => state.vessel.data;
 export const vesselList = state => state.vessel.list;

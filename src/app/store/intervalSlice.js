@@ -9,8 +9,8 @@ import {
 import Transform from '../utils/Transformer';
 
 const initialState = {
-  list: [],
   data: new Interval(),
+  list: [],
   meta: new Meta(),
   listStatus: 'idle',
   dataStatus: 'idle'
@@ -41,8 +41,6 @@ export const intervalEditAsync = createAsyncThunk(
     return Transform.fetchObject(response.data, Interval);
   }
 );
-
-
 
 export const intervalSlice = createSlice({
   name: 'interval',

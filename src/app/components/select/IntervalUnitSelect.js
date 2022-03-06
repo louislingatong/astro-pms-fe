@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {Inputs} from 'adminlte-2-react';
 import Transform from '../../utils/Transformer';
 import {intervalUnits as options, intervalUnitsAsync} from '../../store/optionSlice';
-import {usePrevious} from "../../utils/Hooks";
+import {usePrevious} from '../../utils/Hooks';
 
 function IntervalUnitSelect(props) {
   const {name, id, label, labelPosition = 'none', placeholder = '', allowClear} = props;
@@ -17,7 +17,7 @@ function IntervalUnitSelect(props) {
   const defaultOptions = useSelector(options);
 
   const localValue = useRef(value);
-  const localDefaultOptions = useRef(defaultOptions);
+  const localDefaultOptions = useRef(Transform.toSelectOptions(defaultOptions));
   const openDropdownMenu = useRef(false);
 
   const preLocalValue = usePrevious(localValue);
@@ -39,6 +39,7 @@ function IntervalUnitSelect(props) {
   const fetchOptions = (data, success) => {
     const currentLocalValue = localValue.current;
     const currentLocalDefaultOptions = localDefaultOptions.current;
+
     const params = {};
     if (!data.searchValue && !currentLocalValue && !preLocalValue && currentLocalDefaultOptions.length) {
       success(currentLocalDefaultOptions);

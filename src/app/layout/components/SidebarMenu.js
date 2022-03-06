@@ -13,8 +13,8 @@ function SidebarMenu() {
 
   const managementRoutes = [
     {
-      name: 'Users',
-      path: '/users'
+      name: 'Employees',
+      path: '/employees'
     },
     {
       name: 'Vessels',

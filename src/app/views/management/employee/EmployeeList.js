@@ -1,36 +1,39 @@
 import React, {useEffect, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {usePrevious} from '../../../utils/Hooks';
 import {Box, Button, Content} from 'adminlte-2-react';
 import {Col, Row} from 'react-bootstrap';
 import {
-  intervalList,
-  intervalData,
+  employeeData,
+  employeeList,
   metaData,
   reqListStatus,
-  intervalListAsync,
-} from '../../../store/intervalSlice';
+  setEmployeeData,
+  employeeListAsync,
+} from '../../../store/employeeSlice';
 import {DataTable, Divider, Modal} from '../../../components';
-import Interval from '../../../core/models/Interval';
-import IntervalDetail from './IntervalDetail';
+import Employee from '../../../core/models/Employee';
+import EmployeeForm from '../form/EmployeeForm';
 
-function IntervalList({name}) {
+function EmployeeList({name}) {
+  const history = useHistory();
   const dispatch = useDispatch();
 
-  const interval = useSelector(intervalData);
-  const intervals = useSelector(intervalList);
+  const employee = useSelector(employeeData);
+  const employees = useSelector(employeeList);
   const meta = useSelector(metaData);
   const status = useSelector(reqListStatus);
 
   const isLoading = status === 'loading';
 
-  const [localInterval, setLocalInterval] = useState(new Interval());
-  const [localIntervals, setLocalIntervals] = useState(intervals);
-  const [intervalModalShow, setIntervalModalShow] = useState(false);
+  const [localEmployee, setLocalEmployee] = useState(new Employee());
+  const [localEmployees, setLocalEmployees] = useState(employees);
+  const [employeeModalShow, setEmployeeModalShow] = useState(false);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [params, setParams] = useState({});
 
-  const prevLocalInterval = usePrevious(localInterval);
+  const prevLocalVessel = usePrevious(localEmployee);
   const prevParams = usePrevious(params);
 
   useEffect(() => {
@@ -38,26 +41,18 @@ function IntervalList({name}) {
   }, []);
 
   useEffect(() => {
-    if (localIntervals) {
-      setLocalIntervals(intervals);
+    if (localEmployees) {
+      setLocalEmployees(employees);
     }
-  }, [intervals]);
+  }, [employees]);
 
   useEffect(() => {
-    if (prevLocalInterval) {
-      setLocalInterval(interval);
+    if (prevLocalVessel) {
+      setLocalEmployee(employee);
       handleModalClose();
       initList();
     }
-  }, [interval]);
-
-  useEffect(() => {
-    if (prevLocalInterval
-      && (prevLocalInterval.id !== localInterval.id)
-      && !!localInterval.id) {
-      handleModalOpen();
-    }
-  }, [localInterval]);
+  }, [employee]);
 
   useEffect(() => {
     if (prevParams) {
@@ -66,7 +61,7 @@ function IntervalList({name}) {
   }, [params]);
 
   const initList = () => {
-    dispatch(intervalListAsync(params));
+    dispatch(employeeListAsync(params));
   };
 
   const handleRowSelect = (selectedRow) => {
@@ -81,8 +76,9 @@ function IntervalList({name}) {
     } else if (selectedRow.action === 'unchecked_all') {
       newSelectedRowIds = [];
     } else {
-      newSelectedRowIds = [selectedRow.id];
-      setLocalInterval(selectedRow);
+      setLocalEmployee(selectedRow);
+      dispatch(setEmployeeData(selectedRow));
+      history.push(`/employees/${selectedRow.id}`);
     }
     setSelectedRowIds(newSelectedRowIds);
   }
@@ -104,20 +100,30 @@ function IntervalList({name}) {
   };
 
   const handleModalOpen = () => {
-    setIntervalModalShow(true);
+    setEmployeeModalShow(true);
   };
 
   const handleModalClose = () => {
-    setSelectedRowIds([]);
-    setLocalInterval(new Interval());
-    setIntervalModalShow(false);
+    setEmployeeModalShow(false);
   };
 
   const header = [
     {
-      title: 'Interval',
-      data: 'unit',
-      render: (unit, row) => `${row.value} ${unit.name}`,
+      title: 'Employee ID',
+      data: 'id_number',
+    },
+    {
+      title: 'Name',
+      data: 'full_name',
+    },
+    {
+      title: 'Department',
+      data: 'department',
+      render: department => department.name,
+    },
+    {
+      title: 'Position',
+      data: 'position',
     },
   ];
 
@@ -128,7 +134,7 @@ function IntervalList({name}) {
           <Col xs={12}>
             <Button
               type="primary"
-              text="Add New Interval"
+              text="Add New Employee"
               onClick={handleModalOpen}
               pullRight
             />
@@ -140,7 +146,7 @@ function IntervalList({name}) {
                 <Col xs={12}>
                   <DataTable
                     api
-                    data={localIntervals}
+                    data={localEmployees}
                     columns={header}
                     selectedRowIds={selectedRowIds}
                     options={{
@@ -169,7 +175,7 @@ function IntervalList({name}) {
                 <Col xs={12}>
                   {
                     !!selectedRowIds.length
-                      && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
+                    && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
                   }
                 </Col>
               </Row>
@@ -177,17 +183,17 @@ function IntervalList({name}) {
           </Col>
         </Row>
         <Modal
-          show={intervalModalShow}
-          title={localInterval.id ? 'Interval Details' : 'Add New Interval'}
+          show={employeeModalShow}
+          title="Add New Employee"
           modalSize="sm"
           closeButton
           onHide={handleModalClose}
         >
-          <IntervalDetail data={localInterval}/>
+          <EmployeeForm data={new Employee()} />
         </Modal>
       </Content>
     </React.Fragment>
   )
 }
 
-export default IntervalList;
+export default EmployeeList;

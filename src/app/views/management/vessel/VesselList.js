@@ -1,36 +1,39 @@
 import React, {useEffect, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {useDispatch, useSelector} from 'react-redux';
 import {usePrevious} from '../../../utils/Hooks';
 import {Box, Button, Content} from 'adminlte-2-react';
 import {Col, Row} from 'react-bootstrap';
 import {
-  intervalList,
-  intervalData,
+  vesselData,
+  vesselList,
   metaData,
   reqListStatus,
-  intervalListAsync,
-} from '../../../store/intervalSlice';
+  setVesselData,
+  vesselListAsync,
+} from '../../../store/vesselSlice';
 import {DataTable, Divider, Modal} from '../../../components';
-import Interval from '../../../core/models/Interval';
-import IntervalDetail from './IntervalDetail';
+import Vessel from '../../../core/models/Vessel';
+import VesselForm from '../form/VesselForm';
 
-function IntervalList({name}) {
+function VesselList({name}) {
+  const history = useHistory();
   const dispatch = useDispatch();
 
-  const interval = useSelector(intervalData);
-  const intervals = useSelector(intervalList);
+  const vessel = useSelector(vesselData);
+  const vessels = useSelector(vesselList);
   const meta = useSelector(metaData);
   const status = useSelector(reqListStatus);
 
   const isLoading = status === 'loading';
 
-  const [localInterval, setLocalInterval] = useState(new Interval());
-  const [localIntervals, setLocalIntervals] = useState(intervals);
-  const [intervalModalShow, setIntervalModalShow] = useState(false);
+  const [localVessel, setLocalVessel] = useState(new Vessel());
+  const [localVessels, setLocalVessels] = useState(vessels);
+  const [vesselModalShow, setVesselModalShow] = useState(false);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [params, setParams] = useState({});
 
-  const prevLocalInterval = usePrevious(localInterval);
+  const prevLocalVessel = usePrevious(localVessel);
   const prevParams = usePrevious(params);
 
   useEffect(() => {
@@ -38,26 +41,19 @@ function IntervalList({name}) {
   }, []);
 
   useEffect(() => {
-    if (localIntervals) {
-      setLocalIntervals(intervals);
+    if (localVessels) {
+      setLocalVessels(vessels);
     }
-  }, [intervals]);
+  }, [vessels]);
+
 
   useEffect(() => {
-    if (prevLocalInterval) {
-      setLocalInterval(interval);
+    if (prevLocalVessel) {
+      setLocalVessel(vessel);
       handleModalClose();
       initList();
     }
-  }, [interval]);
-
-  useEffect(() => {
-    if (prevLocalInterval
-      && (prevLocalInterval.id !== localInterval.id)
-      && !!localInterval.id) {
-      handleModalOpen();
-    }
-  }, [localInterval]);
+  }, [vessel]);
 
   useEffect(() => {
     if (prevParams) {
@@ -66,7 +62,7 @@ function IntervalList({name}) {
   }, [params]);
 
   const initList = () => {
-    dispatch(intervalListAsync(params));
+    dispatch(vesselListAsync(params));
   };
 
   const handleRowSelect = (selectedRow) => {
@@ -75,14 +71,15 @@ function IntervalList({name}) {
       newSelectedRowIds.push(selectedRow.id);
     } else if (selectedRow.action === 'unchecked') {
       const i = newSelectedRowIds.indexOf(selectedRow);
-      newSelectedRowIds.splice(i, 1)
+      newSelectedRowIds.splice(i, 1);
     } else if (selectedRow.action === 'checked_all') {
       newSelectedRowIds = selectedRow.ids;
     } else if (selectedRow.action === 'unchecked_all') {
       newSelectedRowIds = [];
     } else {
-      newSelectedRowIds = [selectedRow.id];
-      setLocalInterval(selectedRow);
+      setLocalVessel(selectedRow);
+      dispatch(setVesselData(selectedRow));
+      history.push(`/vessels/${selectedRow.id}`);
     }
     setSelectedRowIds(newSelectedRowIds);
   }
@@ -104,20 +101,22 @@ function IntervalList({name}) {
   };
 
   const handleModalOpen = () => {
-    setIntervalModalShow(true);
+    setVesselModalShow(true);
   };
 
   const handleModalClose = () => {
-    setSelectedRowIds([]);
-    setLocalInterval(new Interval());
-    setIntervalModalShow(false);
+    setVesselModalShow(false);
   };
 
   const header = [
     {
-      title: 'Interval',
-      data: 'unit',
-      render: (unit, row) => `${row.value} ${unit.name}`,
+      title: 'Owner',
+      data: 'owner',
+      render: owner => owner.name,
+    },
+    {
+      title: 'Name',
+      data: 'name',
     },
   ];
 
@@ -128,7 +127,7 @@ function IntervalList({name}) {
           <Col xs={12}>
             <Button
               type="primary"
-              text="Add New Interval"
+              text="Add New Vessel"
               onClick={handleModalOpen}
               pullRight
             />
@@ -140,7 +139,7 @@ function IntervalList({name}) {
                 <Col xs={12}>
                   <DataTable
                     api
-                    data={localIntervals}
+                    data={localVessels}
                     columns={header}
                     selectedRowIds={selectedRowIds}
                     options={{
@@ -169,7 +168,7 @@ function IntervalList({name}) {
                 <Col xs={12}>
                   {
                     !!selectedRowIds.length
-                      && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
+                    && <Button type="danger" text={`Delete (${selectedRowIds.length})`} pullRight/>
                   }
                 </Col>
               </Row>
@@ -177,17 +176,17 @@ function IntervalList({name}) {
           </Col>
         </Row>
         <Modal
-          show={intervalModalShow}
-          title={localInterval.id ? 'Interval Details' : 'Add New Interval'}
-          modalSize="sm"
+          show={vesselModalShow}
+          title="Add New Vessel"
+          modalSize="lg"
           closeButton
           onHide={handleModalClose}
         >
-          <IntervalDetail data={localInterval}/>
+          <VesselForm data={new Vessel()} />
         </Modal>
       </Content>
     </React.Fragment>
   )
 }
 
-export default IntervalList;
+export default VesselList;

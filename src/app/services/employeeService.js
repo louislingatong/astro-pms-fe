@@ -2,7 +2,7 @@ import Http from '../utils/Http';
 
 export function fetchAll(params) {
   return new Promise((resolve, reject) => {
-    Http.get('vessels', {params})
+    Http.get('employees', {params})
       .then(res => {
         resolve(res.data);
       })
@@ -14,7 +14,7 @@ export function fetchAll(params) {
 
 export function fetchById(id) {
   return new Promise((resolve, reject) => {
-    Http.get(`vessels/${id}`)
+    Http.get(`employees/${id}`)
       .then(res => {
         resolve(res.data);
       })
@@ -31,7 +31,7 @@ export function add(data) {
   }
   formData.append('_method', 'POST');
   return new Promise((resolve, reject) => {
-    Http.post('vessels', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    Http.post('employees', formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .then(res => {
         resolve(res.data);
       })
@@ -43,18 +43,18 @@ export function add(data) {
 }
 
 export function edit(data) {
-  let vesselId;
+  let employeeId;
   const formData = new FormData();
   for (const [key, value] of Object.entries(data)) {
-    if (key === 'vessel_id') {
-      vesselId = value;
+    if (key === 'employee_id') {
+      employeeId = value;
     } else {
       formData.append(key, value);
     }
   }
   formData.append('_method', 'PUT');
   return new Promise((resolve, reject) => {
-    Http.post(`vessels/${vesselId}`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
+    Http.post(`employees/${employeeId}`, formData, {headers: {'Content-Type': 'multipart/form-data'}})
       .then(res => {
         resolve(res.data);
       })
@@ -64,3 +64,4 @@ export function edit(data) {
       })
   })
 }
+

@@ -10,8 +10,8 @@ import Meta from '../core/models/Meta';
 import Transform from '../utils/Transformer';
 
 const initialState = {
-  list: [],
   data: new Machinery(),
+  list: [],
   meta: new Meta(),
   listStatus: 'idle',
   dataStatus: 'idle'

@@ -90,7 +90,7 @@ function NavbarMenu() {
       </Entry>
       <Entry
         icon="fa-power-off"
-        onClick={() => logoutAsync()}
+        onClick={() => dispatch(logoutAsync())}
       />
     </React.Fragment>
   );

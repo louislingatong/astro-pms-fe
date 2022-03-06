@@ -201,7 +201,9 @@ function MachineryList({name}) {
                     isLoading={isLoading}
                   />
                 </Col>
-                <Divider/>
+                <Col xs={12}>
+                  <Divider/>
+                </Col>
                 <Col xs={12}>
                   {
                     !!selectedRowIds.length
