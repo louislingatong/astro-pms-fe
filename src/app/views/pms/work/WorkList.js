@@ -6,15 +6,10 @@ import {activeVesselSubMenu} from '../../../store/navbarMenuSlice';
 import {Box, Button, Col, Content, Row, Inputs} from 'adminlte-2-react';
 import DataTable from '../../../components/DataTable';
 import {usePrevious} from '../../../utils/Hooks';
-import Work from '../../../core/models/Work';
-import {Divider, Modal} from "../../../components";
-import Vessel from "../../../core/models/Vessel";
-import VesselMachineryRunningHour from "../../../core/models/VesselMachineryRunningHour";
-import VesselMachinerySubCategoryWork from "../../../core/models/VesselMachinerySubCategoryWork";
-import WorkForm from "../form/WorkForm";
-import WorkDetail from "./WorkDetail";
-import VesselDepartmentSelect from "../../../components/select/VesselDepartmentSelect";
-import MachinerySelect from "../../../components/select/MachinerySelect";
+import {Divider, Modal} from '../../../components';
+import WorkView from './WorkView';
+import VesselDepartmentSelect from '../../../components/select/VesselDepartmentSelect';
+import MachinerySelect from '../../../components/select/MachinerySelect';
 
 function WorkList({name}) {
   const {Select2} = Inputs;
@@ -31,7 +26,9 @@ function WorkList({name}) {
 
   const [localWorkDone, setLocalWorkDone] = useState([]);
   const [localWorks, setLocalWorks] = useState(works);
+  const [workHistory, setWorkHistory] = useState([]);
   const [workModalShow, setWorkModalShow] = useState(false);
+  const [workHistoryModalShow, setWorkHistoryModalShow] = useState(false);
   const [selectedRows, setSelectedRows] = useState({});
   const [params, setParams] = useState({vessel: activeVessel.name});
   const [filters, setFilters] = useState({});
@@ -68,7 +65,7 @@ function WorkList({name}) {
   useEffect(() => {
     if (prevWorkDone) {
       setLocalWorkDone(workDone);
-      handleModalClose();
+      handleWorkModalClose();
       initList();
     }
   }, [workDone]);
@@ -118,14 +115,27 @@ function WorkList({name}) {
       : setParams({vessel});
   };
 
-  const handleModalOpen = () => {
+  const handleWorkModalOpen = () => {
     setWorkModalShow(true);
   };
 
-  const handleModalClose = () => {
+  const handleWorkModalClose = () => {
     setSelectedRows({});
     setWorkModalShow(false);
   };
+
+  const handleWorkHistoryModalOpen = () => {
+    setWorkHistoryModalShow(true);
+  };
+
+  const handleWorkHistoryModalClose = () => {
+    setWorkHistoryModalShow(false);
+  };
+
+  const viewWorkHistory = (work) => {
+    setWorkHistory(work.work_history);
+    handleWorkHistoryModalOpen();
+  }
 
   const handleFilterChange = (e) => {
     const name = e.target.name;
@@ -183,6 +193,11 @@ function WorkList({name}) {
       title: 'Remarks',
       data: 'remarks',
       render: (remarks, row) => row.current_work.remarks,
+    },
+    {
+      title: '',
+      data: 'action',
+      render: (action, row) => <Button type="primary" icon="fas-history" onClick={() => viewWorkHistory(row)}/>,
     },
   ];
 
@@ -258,7 +273,7 @@ function WorkList({name}) {
                 <Col xs={12}>
                   {
                     !!Object.keys(selectedRows).length
-                    && <Button type="primary" text="Work" onClick={handleModalOpen} pullRight/>
+                    && <Button type="primary" text="Work" onClick={handleWorkModalOpen} pullRight/>
                   }
                 </Col>
               </Row>
@@ -270,9 +285,39 @@ function WorkList({name}) {
           title='Work'
           modalSize="lg"
           closeButton
-          onHide={handleModalClose}
+          onHide={handleWorkModalClose}
         >
-          <WorkDetail rows={selectedRows} />
+          <WorkView rows={selectedRows} />
+        </Modal>
+        <Modal
+          show={workHistoryModalShow}
+          title='Work History'
+          modalSize="sm"
+          closeButton
+          onHide={handleWorkHistoryModalClose}
+        >
+          <Row>
+            <Col xs={12}>
+              <Row>
+                <Col xs={6}><label>Encode Date</label></Col>
+                <Col xs={6}><label>Encode By</label></Col>
+              </Row>
+            </Col>
+            <Col xs={12}><Divider type="line" /></Col>
+            {
+              workHistory.map((work) => (
+                <React.Fragment>
+                  <Col xs={12}>
+                    <Row>
+                      <Col xs={6}>{work.created_at}</Col>
+                      <Col xs={6}>{work.creator}</Col>
+                    </Row>
+                  </Col>
+                  <Col xs={12}><Divider type="line" /></Col>
+                </React.Fragment>
+              ))
+            }
+          </Row>
         </Modal>
       </Content>
     </React.Fragment>

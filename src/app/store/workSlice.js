@@ -1,15 +1,21 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import VesselMachinerySubCategoryWork from '../core/models/VesselMachinerySubCategoryWork';
 import Meta from '../core/models/Meta';
-import {fetchAll, add} from '../services/workService';
+import {fetchAll, add, count} from '../services/workService';
 import Transform from '../utils/Transformer';
 
 const initialState = {
+  count: {
+    warning: 0,
+    due: 0,
+    overdue: 0
+  },
   doneList: [],
   list: [],
   meta: new Meta(),
-  listStatus: 'idle',
-  doneListStatus: 'idle'
+  countStatus: 'idle',
+  doneListStatus: 'idle',
+  listStatus: 'idle'
 };
 
 export const workListAsync = createAsyncThunk(
@@ -27,6 +33,14 @@ export const workAddAsync = createAsyncThunk(
   async (params) => {
     const response = await add(params);
     return Transform.fetchCollection(response.data, VesselMachinerySubCategoryWork);
+  }
+);
+
+export const workCountAsync = createAsyncThunk(
+  'work/countWorksByStatus',
+  async () => {
+    const response = await count();
+    return response.data;
   }
 );
 
@@ -56,14 +70,26 @@ export const workSlice = createSlice({
       })
       .addCase(workAddAsync.rejected, (state, action) => {
         state.doneListStatus = 'idle';
+      })
+      .addCase(workCountAsync.pending, (state) => {
+        state.countStatus = 'loading';
+      })
+      .addCase(workCountAsync.fulfilled, (state, action) => {
+        state.countStatus = 'idle';
+        state.count = action.payload;
+      })
+      .addCase(workCountAsync.rejected, (state, action) => {
+        state.countStatus = 'idle';
       });
   },
 });
 
+export const workCount = state => state.work.count;
 export const workDoneList = state => state.work.doneList;
 export const workList = state => state.work.list;
 export const metaData = state => state.work.meta;
-export const reqListStatus = state => state.work.listStatus;
+export const reqCountStatus = state => state.work.countStatus;
 export const reqDoneListStatus = state => state.work.doneListStatus;
+export const reqListStatus = state => state.work.listStatus;
 
 export default workSlice.reducer;

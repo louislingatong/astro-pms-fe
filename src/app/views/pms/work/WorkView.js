@@ -3,7 +3,7 @@ import {Col, Row} from 'react-bootstrap';
 import WorkForm from '../form/WorkForm';
 import DataTable from "../../../components/DataTable";
 
-function WorkDetail({rows}) {
+function WorkView({rows}) {
   const header = [
     {
       title: 'Code',
@@ -49,4 +49,4 @@ function WorkDetail({rows}) {
   );
 }
 
-export default WorkDetail;
+export default WorkView;

@@ -11,10 +11,8 @@ import {Box, Button, Col, Content, Row} from 'adminlte-2-react';
 import DataTable from '../../../components/DataTable';
 import {usePrevious} from '../../../utils/Hooks';
 import {Divider, Modal} from '../../../components';
-import Vessel from '../../../core/models/Vessel';
 import VesselMachineryRunningHour from '../../../core/models/VesselMachineryRunningHour';
-import RunningHourForm from "../form/RunningHourForm";
-import RunningHourDetail from "./RunningHourDetail";
+import RunningHourDetail from "./RunningHourView";
 import VesselDepartmentSelect from "../../../components/select/VesselDepartmentSelect";
 
 function RunningHourList({name}) {
@@ -30,7 +28,9 @@ function RunningHourList({name}) {
 
   const [localVesselMachineryRunningHour, setLocalVesselMachineryRunningHour] = useState(new VesselMachineryRunningHour());
   const [localVesselMachineryRunningHours, setLocalVesselMachineryRunningHours] = useState(runningHours);
+  const [runningHourHistory, setRunningHourHistory] = useState([]);
   const [runningHourModalShow, setRunningHourModalShow] = useState(false);
+  const [runningHourHistoryModalShow, setRunningHourHistoryModalShow] = useState(false);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [params, setParams] = useState({vessel: activeVessel.name});
   const [filters, setFilters] = useState({});
@@ -61,7 +61,7 @@ function RunningHourList({name}) {
   useEffect(() => {
     if (prevLocalVesselMachineryRunningHour) {
       setLocalVesselMachineryRunningHour(runningHour);
-      handleModalClose();
+      handleRunningHourModalClose();
       initList();
     }
   }, [runningHour]);
@@ -70,7 +70,7 @@ function RunningHourList({name}) {
     if (prevLocalVesselMachineryRunningHour
       && (prevLocalVesselMachineryRunningHour.id !== localVesselMachineryRunningHour.id)
       && !!localVesselMachineryRunningHour.id) {
-      handleModalOpen();
+      handleRunningHourModalOpen();
     }
   }, [localVesselMachineryRunningHour]);
 
@@ -117,15 +117,28 @@ function RunningHourList({name}) {
       : setParams({vessel});
   };
 
-  const handleModalOpen = () => {
+  const handleRunningHourModalOpen = () => {
     setRunningHourModalShow(true);
   };
 
-  const handleModalClose = () => {
+  const handleRunningHourModalClose = () => {
     setSelectedRowIds([]);
     setLocalVesselMachineryRunningHour(new VesselMachineryRunningHour());
     setRunningHourModalShow(false);
   };
+
+  const handleRunningHourHistoryModalOpen = () => {
+    setRunningHourHistoryModalShow(true);
+  };
+
+  const handleRunningHourHistoryModalClose = () => {
+    setRunningHourHistoryModalShow(false);
+  };
+
+  const viewRunningHourHistory = (runningHour) => {
+    setRunningHourHistory(runningHour.running_hour_history);
+    handleRunningHourHistoryModalOpen();
+  }
 
   const handleFilterChange = (e) => {
     const name = e.target.name;
@@ -163,6 +176,11 @@ function RunningHourList({name}) {
       title: 'Encoded Date',
       data: 'create_at',
       render: (createdAt, row) => row.current_running_hour.created_at,
+    },
+    {
+      title: '',
+      data: 'action',
+      render: (action, row) => <Button type="primary" icon="fas-history" onClick={() => viewRunningHourHistory(row)}/>,
     },
   ];
 
@@ -220,9 +238,39 @@ function RunningHourList({name}) {
           title='Update Running Hours'
           modalSize="md"
           closeButton
-          onHide={handleModalClose}
+          onHide={handleRunningHourModalClose}
         >
           <RunningHourDetail data={localVesselMachineryRunningHour}/>
+        </Modal>
+        <Modal
+          show={runningHourHistoryModalShow}
+          title='Work History'
+          modalSize="sm"
+          closeButton
+          onHide={handleRunningHourHistoryModalClose}
+        >
+          <Row>
+            <Col xs={12}>
+              <Row>
+                <Col xs={6}><label>Encode Date</label></Col>
+                <Col xs={6}><label>Encode By</label></Col>
+              </Row>
+            </Col>
+            <Col xs={12}><Divider type="line" /></Col>
+            {
+              runningHourHistory.map((runningHour) => (
+                <React.Fragment>
+                  <Col xs={12}>
+                    <Row>
+                      <Col xs={6}>{runningHour.created_at}</Col>
+                      <Col xs={6}>{runningHour.creator}</Col>
+                    </Row>
+                  </Col>
+                  <Col xs={12}><Divider type="line" /></Col>
+                </React.Fragment>
+              ))
+            }
+          </Row>
         </Modal>
       </Content>
     </React.Fragment>

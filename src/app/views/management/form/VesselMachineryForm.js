@@ -15,8 +15,8 @@ import {activeVesselSubMenu} from '../../../store/navbarMenuSlice';
 const validator = new ReeValidate({
   vessel: 'required',
   machinery: 'required',
-  inchargeRank: 'required',
-  installationDate: 'required',
+  incharge_rank: 'required',
+  installed_date: 'required',
 });
 
 function VesselMachineryForm({data: localVesselMachinery}) {
@@ -31,7 +31,7 @@ function VesselMachineryForm({data: localVesselMachinery}) {
     vessel: activeVessel.name,
     machinery: localVesselMachinery.machinery.name,
     incharge_rank: localVesselMachinery.incharge_rank.name,
-    installation_date: localVesselMachinery.installed_date
+    installed_date: localVesselMachinery.installed_date
       ? moment(localVesselMachinery.installed_date).format("DD-MMM-YYYY")
       : moment().format("DD-MMM-YYYY"),
   });
@@ -134,8 +134,8 @@ function VesselMachineryForm({data: localVesselMachinery}) {
           </Col>
           <Col xs={12} md={4}>
             <Date
-              name="installation_date"
-              id="installationDateInput"
+              name="installed_date"
+              id="installedDateInput"
               label="Installation Date"
               labelPosition="above"
               iconRight="fa-calendar"
@@ -145,10 +145,10 @@ function VesselMachineryForm({data: localVesselMachinery}) {
                 isOutsideRange: () => false
               }}
               onChange={handleInputChange}
-              value={moment(formData.installation_date)}
+              value={moment(formData.installed_date)}
               disabled={isViewing}
-              type={formErrors['installation_date'] ? 'error' : ''}
-              help={formErrors['installation_date']}
+              type={formErrors['installed_date'] ? 'error' : ''}
+              help={formErrors['installed_date']}
             />
           </Col>
         </Row>

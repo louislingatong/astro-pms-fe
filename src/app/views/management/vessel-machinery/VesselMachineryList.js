@@ -14,7 +14,7 @@ import {
 import {activeVesselSubMenu} from '../../../store/navbarMenuSlice';
 import VesselMachinery from '../../../core/models/VesselMachinery';
 import Divider from '../../../components/Divider';
-import VesselMachineryDetail from '../vessel-machinery/VesselMachineryDetail';
+import VesselMachineryView from './VesselMachineryView';
 import Modal from '../../../components/Modal';
 import VesselDepartmentSelect from '../../../components/select/VesselDepartmentSelect';
 
@@ -246,7 +246,7 @@ function VesselMachineryList({name}) {
           closeButton
           onHide={handleModalClose}
         >
-          <VesselMachineryDetail data={localVesselMachinery}/>
+          <VesselMachineryView data={localVesselMachinery}/>
         </Modal>
       </Content>
     </React.Fragment>

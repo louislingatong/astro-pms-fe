@@ -12,7 +12,7 @@ function DataTable(props) {
   const {Text, Select} = Inputs;
 
   const {data = [], columns, selectedRowIds = [], condensed, striped, hover, border, responsive, fixed, noMargin} = props;
-  const {api, options = {}, meta, multiple = false, rowSelect = false, isLoading = false, clearSelectedRows = false} = props;
+  const {api, options = {}, meta, multiple = false, rowSelect = false, isLoading = false} = props;
   const {onPageLengthChange, onSearchChange, onPageChange, onSelect} = props;
   const {page, pageInfo, search, pageLength} = options;
 
@@ -237,6 +237,13 @@ function DataTable(props) {
         </td>
       );
     }
+    if (column.data === 'action') {
+      return (
+        <td key={`${column.data}-${rowIdx}`} style={{width: `${column.width}%`}}>
+          {column.render(data, rowData, rowIdx)}
+        </td>
+      )
+    }
     if (column.render) {
       return (
         rowSelect
@@ -408,7 +415,6 @@ DataTable.propTypes = {
   onPageLengthChange: PropTypes.func,
   onPageChange: PropTypes.func,
   isLoading: PropTypes.bool,
-  clearSelectedRows: PropTypes.bool,
 };
 
 export default DataTable;

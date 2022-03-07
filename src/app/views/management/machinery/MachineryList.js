@@ -13,7 +13,7 @@ import {
   reqListStatus,
   machineryListAsync,
 } from '../../../store/machinerySlice';
-import MachineryDetail from './MachineryDetail';
+import MachineryView from './MachineryView';
 import Machinery from '../../../core/models/Machinery';
 import VesselDepartmentSelect from "../../../components/select/VesselDepartmentSelect";
 
@@ -221,7 +221,7 @@ function MachineryList({name}) {
           closeButton
           onHide={handleModalClose}
         >
-          <MachineryDetail data={localMachinery}/>
+          <MachineryView data={localMachinery}/>
         </Modal>
       </Content>
     </React.Fragment>

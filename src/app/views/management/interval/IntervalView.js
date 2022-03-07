@@ -1,7 +1,7 @@
 import React from 'react';
 import IntervalForm from '../form/IntervalForm';
 
-function IntervalDetail({data: localInterval}) {
+function IntervalView({data: localInterval}) {
   return (
     <React.Fragment>
       <IntervalForm data={localInterval}/>
@@ -9,4 +9,4 @@ function IntervalDetail({data: localInterval}) {
   );
 }
 
-export default IntervalDetail;
+export default IntervalView;

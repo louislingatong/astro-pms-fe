@@ -17,7 +17,7 @@ const validator = new ReeValidate({
   interval: 'required',
 });
 
-function VesselMachineryDetail({data: localVesselMachinery}) {
+function VesselMachineryView({data: localVesselMachinery}) {
   const {Text} = Inputs;
 
   const dispatch = useDispatch();
@@ -183,7 +183,7 @@ function VesselMachineryDetail({data: localVesselMachinery}) {
           id={`description${row.id}Input`}
           labelPosition="none"
           value={formDatas[row.id] ? formDatas[row.id].description : ''}
-          defaultSuggestions={row.descriptions}
+          defaultSuggestions={row.description}
           disabled={!formDatas[row.id]}
           onChange={(e) => handleInputChange(e, row.id)}
         />
@@ -259,4 +259,4 @@ function VesselMachineryDetail({data: localVesselMachinery}) {
   );
 }
 
-export default VesselMachineryDetail;
+export default VesselMachineryView;

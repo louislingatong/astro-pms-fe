@@ -12,7 +12,7 @@ import {
 } from '../../../store/intervalSlice';
 import {DataTable, Divider, Modal} from '../../../components';
 import Interval from '../../../core/models/Interval';
-import IntervalDetail from './IntervalDetail';
+import IntervalView from './IntervalView';
 
 function IntervalList({name}) {
   const dispatch = useDispatch();
@@ -183,7 +183,7 @@ function IntervalList({name}) {
           closeButton
           onHide={handleModalClose}
         >
-          <IntervalDetail data={localInterval}/>
+          <IntervalView data={localInterval}/>
         </Modal>
       </Content>
     </React.Fragment>

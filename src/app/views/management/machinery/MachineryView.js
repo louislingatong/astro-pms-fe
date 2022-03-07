@@ -8,7 +8,7 @@ import MachineryForm from '../form/MachineryForm';
 import SubCategoryForm from '../form/SubCategoryForm';
 import {reqDataStatus} from '../../../store/machinerySlice';
 
-function MachineryDetail({data: localMachinery}) {
+function MachineryView({data: localMachinery}) {
   const status = useSelector(reqDataStatus);
 
   const [selectedRowIds, setSelectedRowIds] = useState([]);
@@ -105,4 +105,4 @@ function MachineryDetail({data: localMachinery}) {
   );
 }
 
-export default MachineryDetail;
+export default MachineryView;
